@@ -1,6 +1,6 @@
 import sbt._
 import Keys._
-import play.Project._
+import PlayProject._
 
 object ApplicationBuild extends Build {
 
@@ -9,7 +9,6 @@ object ApplicationBuild extends Build {
 
    val appDependencies = Seq(
       // Add your project dependencies here,
-      javaCore,
       "leodagdag" % "play2-morphia-plugin_2.9.1" % "0.0.6"
     )
 
