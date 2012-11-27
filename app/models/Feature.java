@@ -20,7 +20,7 @@ public class Feature extends Model
 	@Id
 	public String id = new ObjectId().toString();
 	public String type = "Feature";
-	public HashMap<String, String> properties;
+	public HashMap<String, Object> properties;
 	public Geometry geometry;
 	
 	public Feature() {
@@ -29,14 +29,14 @@ public class Feature extends Model
 	
 	public Feature(Geometry geometry) {
 		this.geometry = geometry;
-		properties = new HashMap<String, String>();
+		properties = new HashMap<String, Object>();
 	}
 	
-	public void setProperties(HashMap<String, String> props){
+	public void setProperties(HashMap<String, Object> props){
 		this.properties = props;
 	}
 	
-	public HashMap<String, String> getProperties(){
+	public HashMap<String, Object> getProperties(){
 		return properties;
 	}
 	

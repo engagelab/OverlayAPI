@@ -1,7 +1,15 @@
 package controllers;
 
+import models.Feature;
+import geometry.Geometry;
+import geometry.Point;
+import helpers.TwitterHelper;
+
+
+
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
@@ -9,14 +17,14 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
-import static play.libs.Json.fromJson;
+import com.typesafe.config.ConfigException.Parse;
 
-import models.Feature;
-import geometry.Geometry;
-import geometry.Point;
+import static play.libs.Json.fromJson;
 import play.mvc.Controller;
 import play.mvc.Result;
 import static play.libs.Json.toJson;
+
+
 
 public class Features extends Controller {
 
@@ -24,25 +32,35 @@ public class Features extends Controller {
 		JsonNode node = ctx().request().body().asJson();
 		ObjectMapper mapper = new ObjectMapper();
 		
+		//TODO: parse geometry object directly to Java Class from jsonNode
 		//JsonNode geometryNode = node.findPath("geometry");
+		//Point point = fromJson(geometry,Point.class);
+		//String typeString = geometryNode.get("type").asText();
 		
-//		String typeString = geometryNode.get("type").asText();
 		
-		JsonNode coordinates = node.findPath("coordinates");
-		TypeReference<Double[]> collectionTypeD = 
-			    new TypeReference<Double[]>(){};
-			Double[]  coDouble = 
-			    mapper.readValue(coordinates, collectionTypeD);
-		Geometry geometry = new Point(coDouble[0], coDouble[1]);
+		JsonNode coordinatesNode = node.findPath("coordinates");
+		TypeReference<Double[]> collectionTypeD = new TypeReference<Double[]>(){};
+		Double[]  coordinates =  mapper.readValue(coordinatesNode, collectionTypeD);
+		Geometry geometry = new Point(coordinates[0], coordinates[1]);
 		
 		JsonNode properties = node.findPath("properties");
-		TypeReference<HashMap<String, Object>> collectionType = 
-			    new TypeReference<HashMap<String, Object>>(){};
-			HashMap<String, String> proMap = 
-			    mapper.readValue(properties, collectionType);
-
-		//Point point = fromJson(geometry,Point.class);
+		TypeReference<HashMap<String, Object>> collectionType = new TypeReference<HashMap<String, Object>>(){};
+		HashMap<String, Object> proMap = mapper.readValue(properties, collectionType);
+			
+		String description = (String) proMap.get("description");
 		
+		//Formulate the label of the POI, using first sentence in the description
+		String delims = "[.,?!]+";
+		String[] tokens = description.split(delims);
+		String name = tokens[0];
+		proMap.put("name", name);
+
+		// Parse the decription tweet to plain HTML
+		String HTMLdescriptionString = TwitterHelper.parse(description);
+		proMap.put("description", HTMLdescriptionString);
+		
+		List<String> tags = TwitterHelper.searchHashTags(description);
+		proMap.put("tags", tags);
 			
 		Feature geoFeature = new Feature(geometry);
 		geoFeature.setProperties(proMap);
@@ -52,25 +70,3 @@ public class Features extends Controller {
 
 }
 
-/*
- {
-     "type": "Feature",
-     "geometry":
-                 {
-                    "type": "Point",
-                    "coordinates": [102.0, 0.5]
-                 },
-     "properties":
-                 {
-           “name” : “Server will generate the name of POI by parsing the TEXT using some logic”
-                    "description": "text including label  and hashtags that can be the first sentence or some other logical segment",
-            "author": "author name from facebook",
-             "authorId": "author unique Id from facebook",
-                    “tags”: “a list of string separated by space will be made by server by parsing the text”
-                     “descr_url”: “created by server which will lead to HTML page showing the contents of PIO”
-             “icon_url” : “icon of POI representing the source [empty, overlay, instagram, twtiter, etc]”
-             “source_type”: “source [empty, overlay, instagram, twtiter, etc]”
-                 }
-}
-  
- */
