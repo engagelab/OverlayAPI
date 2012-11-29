@@ -2,6 +2,11 @@ package geometry;
 
 import java.util.List;
 
+
+/**
+ * @author Muhammad Fahied
+ */
+
 public class GeometryCollection extends Geometry {
 	
 	private List<Geometry> geometry;

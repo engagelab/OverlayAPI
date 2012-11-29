@@ -5,6 +5,12 @@ import java.util.List;
 import models.Feature;
 
 
+/**
+ * @author Muhammad Fahied
+ */
+
+
+
 public class FeatureCollection {
 	
 	private List<Feature> features;

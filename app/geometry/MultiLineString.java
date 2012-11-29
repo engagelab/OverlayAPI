@@ -3,6 +3,11 @@ package geometry;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Muhammad Fahied
+ */
+
+
 public class MultiLineString extends Geometry {
 	
 	private List<LineString> coordinates;

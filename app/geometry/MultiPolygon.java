@@ -3,6 +3,11 @@ package geometry;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Muhammad Fahied
+ */
+
+
 public class MultiPolygon extends Geometry {
 	
 	private List<Polygon> coordinates;

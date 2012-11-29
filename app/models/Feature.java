@@ -1,16 +1,22 @@
 package models;
 
+import geometry.Geometry;
+
 import java.util.HashMap;
 
 import org.bson.types.ObjectId;
 
-import geometry.Geometry;
+
+import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 
+
 import leodagdag.play2morphia.Model;
 
-
+/**
+ * @author Muhammad Fahied
+ */
 
 @Entity
 public class Feature extends Model
@@ -21,7 +27,19 @@ public class Feature extends Model
 	public String id = new ObjectId().toString();
 	public String type = "Feature";
 	public HashMap<String, Object> properties;
+	
+	@Embedded
 	public Geometry geometry;
+	
+	
+	
+	public static Model.Finder<String, Feature> find()
+	{
+		
+		return new Model.Finder<String, Feature>(String.class, Feature.class);
+	
+	}
+	
 	
 	public Feature() {
 		// TODO Auto-generated constructor stub

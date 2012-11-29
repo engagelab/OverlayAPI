@@ -1,11 +1,15 @@
 package helpers;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.text.StrBuilder;
+
+/**
+ * @author Muhammad Fahied
+ */
+
 
 public class TwitterHelper {
 	
@@ -33,7 +37,7 @@ public class TwitterHelper {
 	         result = matcher.group();
 	         result = result.replace(" ", "");
 	         String search = result.replace("#", "");
-	         String searchHTML="<a href='http://search.twitter.com/search?q=" + search + "'>" + result + "</a>";
+	         String searchHTML="<a href='http://search.overlay.com/search?q=" + search + "'>" + result + "</a>";
 	         tweetText = tweetText.replace(result,searchHTML);
 	     }
 
@@ -45,15 +49,14 @@ public class TwitterHelper {
 	         result = matcher.group();
 	         result = result.replace(" ", "");
 	         String rawName = result.replace("@", "");
-	         String userHTML="<a href='http://twitter.com/${rawName}'>" + result + "</a>";
+	         String userHTML="<a href='http://overlay.com/user/"+ rawName +"'>"  + result + "</a>";
 	         tweetText = tweetText.replace(result,userHTML);
 	     }
 	     return tweetText;
 	 }
 	
 	
-	@SuppressWarnings("null")
-	public static List<String> searchHashTags(String tweetText)
+	public static Set<String> searchHashTags(String tweetText)
 	{
 		 String patternStr = "(?:\\s|\\A)[##]+([A-Za-z0-9-_]+)";
 	     Pattern pattern = Pattern.compile(patternStr);
@@ -61,10 +64,9 @@ public class TwitterHelper {
 	     
 	     
 	     String  result = "";
-	     List<String>hashTags = new ArrayList<String>();
+	     Set<String>hashTags = new HashSet<String>();
 
 	     // Search for Hashtags
-	     int i = 0;
 	     while (matcher.find()) {
 	    	 result = matcher.group();
 	         result = result.replace(" ", "");

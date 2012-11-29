@@ -1,0 +1,20 @@
+{
+    "type": "Feature",
+    "geometry":
+                {
+                   "type": "Point",
+                   "coordinates": [107.0, 0.0]
+                },
+    "properties":
+                {
+              "name" : "",
+                   "description": "Essentials on #SEO, #Communication, #SocialMedia, Technology, Money, and More via @BruceSallan",
+              "author": "Fahied",
+              "author_id": "123kjl2kj3212123k589049723",
+                   "tags": "",
+                   "descr_url": "http://description.url",
+               "icon_url" : "http://icon.url",
+               "source_type": "empty",
+               "author_location":[12.00922,982211]
+                }
+}
