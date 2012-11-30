@@ -1,5 +1,6 @@
 package controllers;
 
+import leodagdag.play2morphia.Blob;
 import models.Feature;
 
 import geometry.Geometry;
@@ -8,6 +9,8 @@ import helpers.FeatureCollection;
 import helpers.TwitterHelper;
 
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -20,6 +23,9 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+
+import com.mongodb.gridfs.GridFSFile;
+import com.mongodb.gridfs.GridFSInputFile;
 
 
 
@@ -171,6 +177,61 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 	}
 	
 	
+	public static Result deleteAGeaoFeature(String id, String author_id) 
+	{
+		Feature feature = Feature.find().byId(id);
+		if(feature == null)
+		{
+			return status(404, "NOT_FOUND");
+		}
+		
+		String real_author_id = (String) feature.properties.get("author_id");
+		if (author_id == real_author_id) {
+			feature.delete();
+			return status(200, "OK");
+		}
+		
+		return status(403, "FORBIDDEN");
+	}
+	
+	
+	public String saveImage(FilePart filePart)
+	{
+		Blob imageBlob = new Blob(filePart.getFile(), filePart.getFilename());
+		GridFSFile file = imageBlob.getGridFSFile();
+		file.save();
+		return  (String) file.getId();
+	}
+	
+	//Instagram take only images with resolution 612 x 612
+	public BufferedImage cropImage(BufferedImage src, int width, int height) {
+	       BufferedImage dest = src.getSubimage(0, 0, width,height);
+	       // Image dest2 = src.getScaledInstance(612, 612, OK);
+	      return dest; 
+	   }
 
+	
+	/*  HTTP STatus Codes
+	  public static final int OK = 200;
+	  public static final int CREATED = 201;
+	  public static final int ACCEPTED = 202;
+	  public static final int PARTIAL_INFO = 203;
+	  public static final int NO_RESPONSE = 204;
+	  public static final int MOVED = 301;
+	  public static final int FOUND = 302;
+	  public static final int METHOD = 303;
+	  public static final int NOT_MODIFIED = 304;
+	  public static final int BAD_REQUEST = 400;
+	  public static final int UNAUTHORIZED = 401;
+	  public static final int PAYMENT_REQUIERED = 402;
+	  public static final int FORBIDDEN = 403;
+	  public static final int NOT_FOUND = 404;
+	  public static final int INTERNAL_ERROR = 500;
+	  public static final int NOT_IMPLEMENTED = 501;
+	  public static final int OVERLOADED = 502;
+	  public static final int GATEWAY_TIMEOUT = 503;
+	   * 
+	   * 
+	   * */
 }
 
