@@ -87,7 +87,62 @@ public class Features extends Controller {
 		return ok(toJson(geoFeature));
 	}
 	
-	
+public static Result updateGeoFeature() throws JsonParseException, JsonMappingException, IOException {
+		
+		// Extract Image from Multipart data
+		FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
+		
+		FilePart jsonFilePart = ctx().request().body().asMultipartFormData().getFile("feature");
+		
+		// Convert json file to JsonNode
+		ObjectMapper mapperj = new ObjectMapper();
+		BufferedReader fileReader = new BufferedReader(
+			new FileReader(jsonFilePart.getFile()));
+		JsonNode node = mapperj.readTree(fileReader);
+		
+		
+		//JsonNode node = ctx().request().body().asJson();
+		ObjectMapper mapper = new ObjectMapper();
+		
+		//TODO: parse geometry object directly to Java Class from jsonNode
+		//JsonNode geometryNode = node.findPath("geometry");
+		//Point point = fromJson(geometry,Point.class);
+		//String typeString = geometryNode.get("type").asText();
+		//Feature newFeature = fromJson(node, Feature.class);
+		
+		JsonNode coordinatesNode = node.findPath("coordinates");
+		TypeReference<Double[]> collectionTypeD = new TypeReference<Double[]>(){};
+		Double[]  coordinates =  mapper.readValue(coordinatesNode, collectionTypeD);
+		Geometry geometry = new Point(coordinates[0], coordinates[1]);
+		
+		JsonNode properties = node.findPath("properties");
+		TypeReference<HashMap<String, Object>> collectionType = new TypeReference<HashMap<String, Object>>(){};
+		HashMap<String, Object> proMap = mapper.readValue(properties, collectionType);
+			
+		String description = (String) proMap.get("description");
+		
+		//Formulate the label of the POI, using first sentence in the description
+		String delims = "[.,?!]+";
+		String[] tokens = description.split(delims);
+		String name = tokens[0];
+		proMap.put("name", name);
+
+		// Parse the decription tweet to plain HTML
+		String HTMLdescriptionString = TwitterHelper.parse(description);
+		proMap.put("description", HTMLdescriptionString);
+		
+		Set<String> tags = TwitterHelper.searchHashTags(description);
+		proMap.put("tags", tags);
+		
+		//find and update feature
+		String id = node.get("id").asText();
+		Feature geoFeature = Feature.find().byId(id);
+		geoFeature.geometry = geometry;
+		geoFeature.setProperties(proMap);
+		geoFeature.update();
+		
+		return ok(toJson(geoFeature));
+	}
 	
 	
 	

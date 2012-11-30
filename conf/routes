@@ -4,9 +4,15 @@
 
 # Home page
 GET    		 /                           controllers.Application.index()
+
+# Geo Features
 POST		/geo						 controllers.Features.createGeoFeature()
+PUT			/geo						 controllers.Features.updateGeoFeature()
 GET			/geo						 controllers.Features.fetchAllGeoFeautres()
 GET			/geo/:lon1/:lat1/:lon2/:lat2						 controllers.Features.geoFeaturesInBoundingBox(lon1:String, lat1:String, lon2:String, lat2:String)
+
+
+# Geo Content
 
 
 # Map static resources from the /public folder to the /assets URL path

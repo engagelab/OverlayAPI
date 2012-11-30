@@ -1,14 +1,15 @@
 {
+	"id" : "50b879e03004d5c4f76067a5",
     "type": "Feature",
     "geometry":
                 {
                    "type": "Point",
-                   "coordinates": [107.0, 0.0]
+                   "coordinates": [105.0, 5.0]
                 },
     "properties":
                 {
               "name" : "",
-                   "description": "Essentials on #SEO, #Communication, #SocialMedia, Technology, Money, and More via @BruceSallan",
+                   "description": "Essentials on #InterMedia #SEO, #Communication, #SocialMedia, Technology, Money, and More via @BruceSallan",
               "author": "Fahied",
               "author_id": "123kjl2kj3212123k589049723",
                    "tags": "",
