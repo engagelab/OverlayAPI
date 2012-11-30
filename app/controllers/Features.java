@@ -154,7 +154,9 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 		return ok(toJson(features));
 	}
 	
-	
+	/* To enble geoo spacial indexing
+	 * db.Feature.ensureIndex({"geometry.coordinates":"2d"});
+	 * */
 	public static Result geoFeaturesInBoundingBox(String lon1, String lat1, String lon2, String lat2)
 	{
 		//Double [][] boundingbox = new Double[][]{{Double.valueOf(lon1),Double.valueOf(lat1)},{Double.valueOf(lon2),Double.valueOf(lat2)}};
