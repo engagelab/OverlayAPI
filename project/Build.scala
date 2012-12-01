@@ -8,8 +8,15 @@ object ApplicationBuild extends Build {
   val appVersion      = "1.0-SNAPSHOT"
 
    val appDependencies = Seq(
-      // Add your project dependencies here,
-      "leodagdag" % "play2-morphia-plugin_2.9.1" % "0.0.6"
+      	// Add your project dependencies here,
+      	"leodagdag" % "play2-morphia-plugin_2.9.1" % "0.0.6",
+      
+        //Apache
+    	"commons-io" % "commons-io" % "2.3",
+    	
+    	//Thumbnailer
+    	"net.coobird" % "thumbnailator" % "0.4.2"
+    
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = JAVA)

@@ -1,7 +1,9 @@
 package controllers;
 
 import leodagdag.play2morphia.Blob;
+import leodagdag.play2morphia.MorphiaPlugin;
 import models.Feature;
+import net.coobird.thumbnailator.Thumbnails;
 
 import geometry.Geometry;
 import geometry.Point;
@@ -9,29 +11,32 @@ import helpers.FeatureCollection;
 import helpers.TwitterHelper;
 
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.IOUtils;
+import org.bson.types.ObjectId;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSFile;
-import com.mongodb.gridfs.GridFSInputFile;
-
-
-
 import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
+import play.mvc.Results;
 import static play.libs.Json.toJson;
 
 /**
@@ -44,6 +49,13 @@ public class Features extends Controller {
 		
 		// Extract Image from Multipart data
 		FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
+		String standard_resolution = saveImageFile(filePart.getFile(), filePart.getContentType());
+		String low_resolution = convertToInstagramImage(filePart.getFile(),filePart.getContentType());
+		//String low_resolution = saveImageFile(convertToInstagramImage(filePart.getFile(), 
+		//									filePart.getContentType()),filePart.getContentType());
+		
+		
+		
 		
 		FilePart jsonFilePart = ctx().request().body().asMultipartFormData().getFile("feature");
 		
@@ -86,7 +98,13 @@ public class Features extends Controller {
 		
 		Set<String> tags = TwitterHelper.searchHashTags(description);
 		proMap.put("tags", tags);
-			
+		
+		//save url to both standard and instagram image
+		proMap.put("standard_resolution", "http://192.168.1.4:9000/image/"+standard_resolution);
+		proMap.put("low_resolution", "http://localhost:9000/image/"+low_resolution);
+		
+		
+		
 		Feature geoFeature = new Feature(geometry);
 		geoFeature.setProperties(proMap);
 		geoFeature.insert();
@@ -97,6 +115,10 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 		
 		// Extract Image from Multipart data
 		FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
+		String standard_resolution = saveImageFile(filePart.getFile(), filePart.getContentType());
+		
+		String low_resolution = convertToInstagramImage(filePart.getFile(),filePart.getContentType());
+		
 		
 		FilePart jsonFilePart = ctx().request().body().asMultipartFormData().getFile("feature");
 		
@@ -132,6 +154,11 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 		String[] tokens = description.split(delims);
 		String name = tokens[0];
 		proMap.put("name", name);
+		
+		//save url to both standard and instagram image
+		proMap.put("standard_resolution", "http://localhost:9000/image/"+standard_resolution);
+		proMap.put("low_resolution", "http://localhost:9000/image/"+low_resolution);
+				
 
 		// Parse the decription tweet to plain HTML
 		String HTMLdescriptionString = TwitterHelper.parse(description);
@@ -195,19 +222,101 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 	}
 	
 	
-	public String saveImage(FilePart filePart)
+	
+	
+	
+	public static String saveImage(FilePart filePart)
 	{
-		Blob imageBlob = new Blob(filePart.getFile(), filePart.getFilename());
+		
+		if (filePart.getFile() == null)
+			return "";
+
+		Blob imageBlob = new Blob(filePart.getFile(), filePart.getContentType());
 		GridFSFile file = imageBlob.getGridFSFile();
 		file.save();
-		return  (String) file.getId();
+		return  file.getId().toString();
 	}
 	
+	
+	
+	
+	
+	
+	public static String saveImageFile(File file, String content_type)
+	{
+		
+		if (file == null)
+			return "";
+
+		Blob imageBlob = new Blob(file, content_type);
+		GridFSFile image = imageBlob.getGridFSFile();
+		image.save();
+		return  image.getId().toString();
+	}
+	
+
+	
+	
+	
+	
+	
+	public static Boolean deleteImage(String id)
+	{
+		MorphiaPlugin.gridFs().remove(new BasicDBObject("id", new ObjectId(id)));
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	public static Result showImage(String id) throws IOException {
+		
+		GridFSDBFile file = MorphiaPlugin.gridFs().findOne(new ObjectId(id));
+		
+		byte[] bytes = IOUtils.toByteArray(file.getInputStream());
+		
+		return Results.ok(bytes).as(file.getContentType());
+		
+	}
+	
+	
 	//Instagram take only images with resolution 612 x 612
-	public BufferedImage cropImage(BufferedImage src, int width, int height) {
-	       BufferedImage dest = src.getSubimage(0, 0, width,height);
-	       // Image dest2 = src.getScaledInstance(612, 612, OK);
-	      return dest; 
+	public static String  convertToInstagramImage(File file, String content_type) throws IOException 
+	{
+		//GridFSDBFile gfile = MorphiaPlugin.gridFs().findOne(new ObjectId(standard_resolution));
+		BufferedImage src = ImageIO.read(file);
+		int height = src.getHeight();
+		int width = src.getWidth();
+		BufferedImage dest = null;
+		if (height > width) {
+			 dest = src.getSubimage(0, 0, width,width);
+		}
+		else {
+			dest = src.getSubimage(0, 0, height,height);
+		}
+		
+		BufferedImage os = null;
+	    
+	    try {
+	    	os = Thumbnails.of(dest).size(612, 612).asBufferedImage();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    
+	   // File file = instagramBufferedImage.;
+	    ImageIO.write(os, content_type, file);
+	    
+	    Blob imageBlob = new Blob(file, content_type);
+		GridFSFile image = imageBlob.getGridFSFile();
+		image.save();
+		return  image.getId().toString();
+
 	   }
 
 	

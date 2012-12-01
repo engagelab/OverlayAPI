@@ -15,7 +15,8 @@ GET				/geo/box/					 controllers.Features.geoFeaturesInBoundingBox(lon1:String,
 
 
 # Geo Content
-
+GET				/image/:id					controllers.Features.showImage(id:String)
+GET				/content/:id				controllers.Contents.contentOfFeature(id:String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

@@ -1,7 +1,18 @@
-@(message: String)
+@(feature: Feature, description: Html)
 
-@main("Welcome to Play 2.0") {
-    
-    @play20.welcome(message, style = "Java")
-    
+@import helper._
+
+@main(title ="Feature Information") {
+
+ 
+
+	 <div class="profile-data">
+	 @feature.properties.get("author")
+	 </div>
+	 <div id="image-holder">
+	 <img src=@feature.properties.get("standard_resolution") alt="Smiley face" height="612" width="612">
+	 </div>
+	 <div id="image-description">
+	 @description</div>
+	
 }
