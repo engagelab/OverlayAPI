@@ -50,7 +50,7 @@ public class Features extends Controller {
 		// Extract Image from Multipart data
 		FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
 		String standard_resolution = saveImageFile(filePart.getFile(), filePart.getContentType());
-		String low_resolution = convertToInstagramImage(filePart.getFile(),filePart.getContentType());
+		//String low_resolution = convertToInstagramImage(filePart.getFile(),filePart.getContentType());
 		//String low_resolution = saveImageFile(convertToInstagramImage(filePart.getFile(), 
 		//									filePart.getContentType()),filePart.getContentType());
 		
@@ -100,14 +100,30 @@ public class Features extends Controller {
 		proMap.put("tags", tags);
 		
 		//save url to both standard and instagram image
-		proMap.put("standard_resolution", "http://192.168.1.4:9000/image/"+standard_resolution);
-		proMap.put("low_resolution", "http://localhost:9000/image/"+low_resolution);
+		proMap.put("standard_resolution", "http://localhost:9000/image/"+standard_resolution);
+		//proMap.put("low_resolution", "http://localhost:9000/image/"+low_resolution);
+		
+		//HTML Content url for the Feature
+		proMap.put("descr_url", "content/"+standard_resolution);
 		
 		
 		
 		Feature geoFeature = new Feature(geometry);
+		
+		//HTML Content url for the Feature
+		proMap.put("descr_url", "content/"+geoFeature.id);
+				
 		geoFeature.setProperties(proMap);
 		geoFeature.insert();
+		
+		
+		//TODO: move these task to Feature Model
+		//Save feature reference to individual tags
+		HashTagManager.saveFeatureRefInHashTable(tags, geoFeature);
+		
+		//Save Feature reference for perticular user
+		Users.saveFeatureRefForUser(proMap.get("username").toString(), proMap.get("full_name").toString(),geoFeature);
+		
 		return ok(toJson(geoFeature));
 	}
 	

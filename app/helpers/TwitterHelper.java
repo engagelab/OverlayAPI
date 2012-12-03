@@ -37,19 +37,19 @@ public class TwitterHelper {
 	         result = matcher.group();
 	         result = result.replace(" ", "");
 	         String search = result.replace("#", "");
-	         String searchHTML="<a href='http://search.overlay.com/search?q=" + search + "'>" + result + "</a>";
+	         String searchHTML="<a href='http://localhost:9000/search/" + search + "'>" + result + "</a>";
 	         tweetText = tweetText.replace(result,searchHTML);
 	     }
 
 	     // Search for Users
-	     patternStr = "(?:\\s|\\A)[@]+([A-Za-z0-9-_]+)";
+	     patternStr = "(?:\\s|\\A)[@]+([A-Za-z0-9-_.]+)";
 	     pattern = Pattern.compile(patternStr);
 	     matcher = pattern.matcher(tweetText);
 	     while (matcher.find()) {
 	         result = matcher.group();
 	         result = result.replace(" ", "");
 	         String rawName = result.replace("@", "");
-	         String userHTML="<a href='http://overlay.com/user/"+ rawName +"'>"  + result + "</a>";
+	         String userHTML="<a href='http://localhost:9000/user/"+ rawName +"'>"  + result + "</a>";
 	         tweetText = tweetText.replace(result,userHTML);
 	     }
 	     return tweetText;

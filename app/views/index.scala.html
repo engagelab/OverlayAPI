@@ -7,12 +7,14 @@
  
 
 	 <div class="profile-data">
-	 @feature.properties.get("author")
+	
+	 
 	 </div>
 	 <div id="image-holder">
 	 <img src=@feature.properties.get("standard_resolution") alt="Smiley face" height="612" width="612">
 	 </div>
 	 <div id="image-description">
+	  <a href='http://localhost:9000/user/@feature.properties.get("username")'><strong>@feature.properties.get("username")</strong></a>
 	 @description</div>
 	
 }

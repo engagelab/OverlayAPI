@@ -10,6 +10,9 @@ POST			/geo						 controllers.Features.createGeoFeature()
 PUT				/geo						 controllers.Features.updateGeoFeature()
 DELETE			/geo						 controllers.Features.deleteAGeaoFeature(id:String, author_id:String)
 GET				/geo						 controllers.Features.fetchAllGeoFeautres()
+GET				/search/:hashTag			 controllers.HashTagManager.fetchGeoFeaturesByTag(hashTag:String)
+GET				/user/:username				 controllers.Users.fetchGeoFeaturesByUser(username:String)
+
 
 GET				/geo/box/					 controllers.Features.geoFeaturesInBoundingBox(lon1:String, lat1:String, lon2:String, lat2:String)
 

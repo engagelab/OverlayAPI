@@ -13,8 +13,15 @@ public class Contents extends Controller{
 	{
 		Feature feature = Feature.find().byId(id);
 		
-		Html description = new Html(feature.properties.get("description").toString());
-		return ok(index.render(feature,description));
+		if (feature == null) {
+			return ok("This POI does not exist anymore.");
+		}
+		else {
+			Html description = new Html(feature.properties.get("description").toString());
+			return ok(index.render(feature,description));
+			
+		}
+		
 	}
 	
 
