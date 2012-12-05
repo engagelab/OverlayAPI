@@ -61,7 +61,7 @@ public class MappingSession extends Model
 		if(features == null)
 		{
 			features = new ArrayList<Feature>();
-			features = createRandomPOIsWithinBoundingBox(boundingBox);
+			features = createRandomPOIsWithinBoundingBox(boundingBox, nPOIs);
 		}
 	}
 	
@@ -69,21 +69,21 @@ public class MappingSession extends Model
 	/* generate random number between the range
 	 * Min + (int)(Math.random() * ((Max - Min) + 1))
 	 * */
-	private  List<Feature> createRandomPOIsWithinBoundingBox(double[] boundingBox) 
+	private  List<Feature> createRandomPOIsWithinBoundingBox(double[] boundingBox, int nPOIs) 
 	{
 		
 		double lat1 = boundingBox[0];
-		double lon1 = boundingBox[1];
+		double lng1 = boundingBox[1];
 		double lat2 = boundingBox[2];
-		double lon2 = boundingBox[3];
+		double lng2 = boundingBox[3];
 		
 		List<Feature> features = new ArrayList<Feature>();
 		
-		    for (int idx = 1; idx <= 10; ++idx)
+		    for (int idx = 1; idx <= nPOIs; ++idx)
 		    {
 		    	double rlat = lat1 + (Math.random() * ((lat2 - lat1) + 1));
-		    	double rlon = lon1 + (Math.random() * ((lon2 - lon1) + 1));
-		    	Geometry geometry = new Point(rlon, rlat);
+		    	double rlng = lng1 + (Math.random() * ((lng2 - lng1) + 1));
+		    	Geometry geometry = new Point(rlng, rlat);
 		    	Feature feature = new Feature(geometry);
 		    	features.add(feature);
 		    }

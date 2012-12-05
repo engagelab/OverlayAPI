@@ -122,7 +122,10 @@ public class Features extends Controller {
 		HashTagManager.saveFeatureRefInHashTable(tags, geoFeature);
 		
 		//Save Feature reference for perticular user
-		Users.saveFeatureRefForUser(proMap.get("username").toString(), proMap.get("full_name").toString(),geoFeature);
+		if (proMap.get("facebook_id") == null) {
+			proMap.put("facebook_id", "");
+		}
+		Users.saveFeatureRefForUser(proMap.get("facebook_id").toString(), proMap.get("full_name").toString(),geoFeature);
 		
 		return ok(toJson(geoFeature));
 	}
@@ -206,15 +209,15 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 	/* To enble geoo spacial indexing
 	 * db.Feature.ensureIndex({"geometry.coordinates":"2d"});
 	 * */
-	public static Result geoFeaturesInBoundingBox(String lon1, String lat1, String lon2, String lat2)
+	public static Result geoFeaturesInBoundingBox(String lng1, String lat1, String lng2, String lat2)
 	{
-		//Double [][] boundingbox = new Double[][]{{Double.valueOf(lon1),Double.valueOf(lat1)},{Double.valueOf(lon2),Double.valueOf(lat2)}};
-		Double lon11 = Double.valueOf(lon1);
+		//Double [][] boundingbox = new Double[][]{{Double.valueOf(lng1),Double.valueOf(lat1)},{Double.valueOf(lng2),Double.valueOf(lat2)}};
+		Double lng11 = Double.valueOf(lng1);
 		Double lat11 = Double.valueOf(lat1);
-		Double lon22 = Double.valueOf(lon2);
+		Double lng22 = Double.valueOf(lng2);
 		Double lat22 = Double.valueOf(lat2);
 	
-		List<Feature> features = Feature.find().disableValidation().field("geometry.coordinates").within(lon11, lat11, lon22, lat22).asList();	
+		List<Feature> features = Feature.find().disableValidation().field("geometry.coordinates").within(lng11, lat11, lng22, lat22).asList();	
 	
 		return ok(toJson(features));
 	}

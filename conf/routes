@@ -21,5 +21,23 @@ GET				/geo/box/					 controllers.Features.geoFeaturesInBoundingBox(lon1:String,
 GET				/image/:id					controllers.Features.showImage(id:String)
 GET				/content/:id				controllers.Contents.contentOfFeature(id:String)
 
+
+
+##### Mapping Sessions ######
+# Add Session
+GET     		/session/new              	controllers.MapingSessions.create()
+POST     		/session                  	controllers.MapingSessions.save()
+
+##### External Content
+GET				/external					controllers.InstagramParser.getPOIs(lon1:String, lat1:String, lon2:String, lat2:String)
+
+
+
+
+
+
+
+
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

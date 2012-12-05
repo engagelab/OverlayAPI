@@ -15,14 +15,18 @@ object ApplicationBuild extends Build {
     	"commons-io" % "commons-io" % "2.3",
     	
     	//Thumbnailer
-    	"net.coobird" % "thumbnailator" % "0.4.2"
+    	"net.coobird" % "thumbnailator" % "0.4.2",
+    	
+    	// Twittter Bootstrap
+    	"com.github.twitter" % "bootstrap" % "2.0.2"
     
     )
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = JAVA)
     .settings(
-     resolvers ++= Seq(DefaultMavenRepository, Resolvers.githubRepository, Resolvers.morphiaRepository),
-     checksums := Nil 
+     	resolvers ++= Seq(DefaultMavenRepository, Resolvers.githubRepository, Resolvers.morphiaRepository),
+      	resolvers += "webjars" at "http://webjars.github.com/m2",
+     	checksums := Nil 
     )
 
 object Resolvers {

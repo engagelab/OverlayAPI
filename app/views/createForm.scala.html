@@ -1,0 +1,27 @@
+@(sessionForm: Form[MappingSession])
+
+@import helper._
+
+@implicitFieldConstructor = @{FieldConstructor(twitterBootstrapInput.render) } 
+
+@main(title ="Create New Mapping Session"){
+    
+    <h1>Create New Mapping Session</h1>
+    
+    @form(action = routes.MapingSessions.save, 'id -> "form") {
+        
+        <fieldset>
+        
+            @inputText(sessionForm("title"), '_label -> "Session Title")
+            @inputText(sessionForm("nPOIs"), '_label -> "Number of Random POIs")
+            <input type="hidden" name="contextual_info" value="@sessionForm("contextual_info").value" />
+           	<input type="hidden" name="boundingBox" value="@sessionForm("boundingBox").value" />
+        </fieldset>
+        
+        <div class="actions">
+            <input type="submit" value="Create this Session" class="btn primary"> 
+        </div>
+        
+    }
+    
+}
