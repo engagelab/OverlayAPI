@@ -1,8 +1,7 @@
 package controllers;
 
 import play.mvc.*;
-
-//import views.html.*;
+import views.html.*;
 
 /**
  * @author Muhammad Fahied
@@ -11,7 +10,7 @@ import play.mvc.*;
 public class Application extends Controller {
   
     public static Result index() {
-        return ok("app ready!");
+    	return ok(maps.render());
     }
   
 }

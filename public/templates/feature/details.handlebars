@@ -1,0 +1,29 @@
+<div class="feature">
+  {{#properties}}
+  <div class="back">
+    <a href="#">back <span class="close">x</span></a>
+  </div>
+  <div class="wrapper">
+    <img src="{{image}}" alt="{{name}}" />
+    <ul>
+      <li class="name"><h1>{{name}}</h1></li>
+      <li class="stats clearfix">
+      <ul>
+        <li><span class="label">Weight:</span> {{weight}} lbs</li>
+        <li><span class="label">Length:</span> {{length}} ft</li>
+      </ul>
+      <ul>
+        <li><span class="label">Width:</span> {{width}} ft</li>
+        <li><span class="label">Height:</span> {{height}} ft</li>
+      </ul>
+      </li>
+      <li class="location">
+      <p>Where to see:</p>
+      <p>U.S. Marine Corps Static Equipment Displays</p>
+      <p>State-of-the-art ground vehicles, aircraft, weaponry and equipment displays.{{#location}} {{.}}{{/location}}</p>
+      </li>
+      <li class="time">{{date}} <span>|</span> {{time}}</li>
+    </ul>
+  </div>
+  {{/properties}}
+</div>
