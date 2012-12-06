@@ -92,9 +92,9 @@ public class Features extends Controller {
 		String name = tokens[0];
 		proMap.put("name", name);
 
-		// Parse the decription tweet to plain HTML
-		String HTMLdescriptionString = TwitterHelper.parse(description);
-		proMap.put("description", HTMLdescriptionString);
+		// TODO: Transfer this process to view content: Parse the decription tweet to plain HTML
+		//String HTMLdescriptionString = TwitterHelper.parse(description);
+		//proMap.put("description", HTMLdescriptionString);
 		
 		Set<String> tags = TwitterHelper.searchHashTags(description);
 		proMap.put("tags", tags);
@@ -106,6 +106,7 @@ public class Features extends Controller {
 		//HTML Content url for the Feature
 		proMap.put("descr_url", "content/"+standard_resolution);
 		
+		proMap.put("source_type", "overlay");
 		
 		
 		Feature geoFeature = new Feature(geometry);
@@ -206,10 +207,21 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 		return ok(toJson(features));
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/* To enble geoo spacial indexing
 	 * db.Feature.ensureIndex({"geometry.coordinates":"2d"});
 	 * */
-	public static Result geoFeaturesInBoundingBox(String lng1, String lat1, String lng2, String lat2)
+	public static Result geoFeaturesInBoundingBox(String lng1, String lat1, String lng2, String lat2) throws Exception
 	{
 		//Double [][] boundingbox = new Double[][]{{Double.valueOf(lng1),Double.valueOf(lat1)},{Double.valueOf(lng2),Double.valueOf(lat2)}};
 		Double lng11 = Double.valueOf(lng1);
@@ -218,9 +230,23 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 		Double lat22 = Double.valueOf(lat2);
 	
 		List<Feature> features = Feature.find().disableValidation().field("geometry.coordinates").within(lng11, lat11, lng22, lat22).asList();	
-	
+		List<Feature> instaPOIs = InstagramParser.getInstaPOIs(lng1, lat1, lng2, lat2);
+		features.addAll(instaPOIs);
 		return ok(toJson(features));
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	public static Result deleteAGeaoFeature(String id, String author_id) 

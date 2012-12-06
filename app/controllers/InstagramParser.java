@@ -41,7 +41,15 @@ public class InstagramParser extends Controller{
 	 * @return The GeoJSON response from the original service response
 	 * @throws Exception 
 	 */
-	public static Result getPOIs(String lng1, String lat1,String lng2, String lat2) throws Exception
+	public static Result getPOIs(String lng1, String lat1,String lng2, String lat2) throws Exception 
+	{
+		List<Feature> features = getInstaPOIs(lng1, lat1, lng2, lat2);
+		return ok(toJson(features));
+		
+	}
+	
+	
+	public static List<Feature> getInstaPOIs(String lng1, String lat1,String lng2, String lat2) throws Exception
 	{
 		String describeService = "https://api.instagram.com/v1/media/search";
 		
@@ -62,22 +70,21 @@ public class InstagramParser extends Controller{
 		
 		//return redirect(url);
 		//return ok(url.toString());
-
+		//List<Feature> geoJSON = new Arr
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode actualObj = mapper.readTree(file);
 		//TODO: add validation if the response type is not 200 then skip the rest process
 		if (actualObj.findPath("meta").get("code").toString().equalsIgnoreCase("200")) {
 			List<Feature> geoJSON = onResponseReceived(actualObj);
-			return ok(toJson(geoJSON));
+			return geoJSON;
 			
 		}
 		else {
-			return ok(toJson(actualObj.findPath("meta")));
+			return new ArrayList<Feature>();
+		}
 			
 		}
 		
-		
-	}
 	
 	
 	public static List<Feature> onResponseReceived(JsonNode json)
@@ -85,7 +92,6 @@ public class InstagramParser extends Controller{
 	
 		JsonNode insta_feeds = json.findValue("data");
 		List<Feature>features = new ArrayList<Feature>();
-		
 		
 		
 		for (int i = 0; i < insta_feeds.size(); i++) 
@@ -99,6 +105,7 @@ public class InstagramParser extends Controller{
 			
 			Feature feature = new Feature(geometry);
 			feature.properties.put("created_time", jsonNode.findValue("created_time"));
+			feature.properties.put("source_type", "Instagram");
 			
 			JsonNode image = jsonNode.findPath("standard_resolution");
 			feature.properties.put("standard_resolution", image.findValue("url"));

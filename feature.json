@@ -4,7 +4,7 @@
     "geometry":
                 {
                    "type": "Point",
-                   "coordinates": [105.0, 5.0]
+                   "coordinates": [10.756731033325195, 59.9238826969285]
                 },
     "properties":
                 {
@@ -16,6 +16,6 @@
                    	"descr_url": "",
                		"icon_url" : "",
                		"source_type": "empty",
-               		"user_location":[12.00922,982211]
+               		"user_location":[10.756731033325195,59.9238826969285]
                 }
 }
