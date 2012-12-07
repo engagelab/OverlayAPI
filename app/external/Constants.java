@@ -45,6 +45,7 @@ import java.io.OutputStream;
 
 public class Constants {
 
+	public final static String SERVER_NAME = "http://localhost:9000";
 	public final static String LAYERS_VERSION = "v0.2.2";
 	public static String ROOT_DIR = ".";
 	public final static String APP_DIR = "gvSIG";

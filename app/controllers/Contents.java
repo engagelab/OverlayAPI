@@ -1,5 +1,6 @@
 package controllers;
 
+import helpers.TwitterHelper;
 import models.Feature;
 import play.api.templates.Html;
 import play.mvc.Controller;
@@ -17,9 +18,44 @@ public class Contents extends Controller{
 			return ok("This POI does not exist anymore.");
 		}
 		else {
-			Html description = new Html(feature.properties.get("description").toString());
-			return ok(index.render(feature,description));
+			String decString = feature.properties.get("description").toString();
+			decString = decString.replaceAll("^\"|\"$", "");
+			String description = TwitterHelper.parse(decString);
+			String image = "<div id=\"image-holder\"> " +
+                    "<img src="+feature.properties.get("standard_resolution").toString()+" alt=\"Smiley face\"  width=\"612\" height=\"612\" > " +
+                    "</div> " ;
 			
+			
+			Html content = new Html(image+description);
+			
+			
+			return ok(index.render(feature,content));
+			
+		}
+		
+	}
+	
+	
+	public static Result contentOfInstaPOI(String id)
+	{
+		Feature feature;
+		try {
+			feature = InstagramParser.getInstaByMediaId(id);
+			String decString = feature.properties.get("description").toString();
+			decString = decString.replaceAll("^\"|\"$", "");
+			String description = TwitterHelper.parse(decString);
+			//description = description.replace('\"', ' ');
+			String image = "<div id=\"image-holder\"> " +
+                    "<img src="+feature.properties.get("standard_resolution").toString()+" alt=\"Smiley face\"> " +
+                    "</div> " ;
+			
+			
+			Html content = new Html(image+description);
+			
+			
+			return ok(index.render(feature,content));
+		} catch (Exception e) {
+			return ok("This POI does not exist anymore.");
 		}
 		
 	}

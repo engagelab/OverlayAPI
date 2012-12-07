@@ -20,6 +20,7 @@ GET				/geo/box/					 controllers.Features.geoFeaturesInBoundingBox(lon1:String,
 # Geo Content
 GET				/image/:id					controllers.Features.showImage(id:String)
 GET				/content/:id				controllers.Contents.contentOfFeature(id:String)
+GET				/instagram/:id				controllers.Contents.contentOfInstaPOI(id:String)
 
 
 

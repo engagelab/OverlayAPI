@@ -49,6 +49,32 @@ public class InstagramParser extends Controller{
 	}
 	
 	
+	
+	
+	
+	
+	
+	
+	public static Feature getInstaByMediaId(String id) throws Exception
+	{
+		String url = "https://api.instagram.com/v1/media/"+id+"?client_id=a80dd450be84452a91527609a4eae97b";
+		String file = doRequest(url);
+
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode actualObj = mapper.readTree(file);
+		//TODO: add validation if the response type is not 200 then skip the rest process
+		if (actualObj.findPath("meta").get("code").toString().equalsIgnoreCase("200")) {
+			Feature geoJSON = instaToGeoJson(actualObj.findValue("data"));
+			return geoJSON;
+			
+		}
+		else {
+			return new Feature();
+		}
+			
+		}
+	
+	
 	public static List<Feature> getInstaPOIs(String lng1, String lat1,String lng2, String lat2) throws Exception
 	{
 		String describeService = "https://api.instagram.com/v1/media/search";
@@ -96,28 +122,8 @@ public class InstagramParser extends Controller{
 		
 		for (int i = 0; i < insta_feeds.size(); i++) 
 		{
-			JsonNode jsonNode = insta_feeds.get(i);
-			JsonNode location = jsonNode.findValue("location");
-			double latitude = location.findValue("latitude").asDouble();
-			double longitude = location.findValue("longitude").asDouble();
-		
-			Geometry geometry = new Point(longitude, latitude);
-			
-			Feature feature = new Feature(geometry);
-			feature.properties.put("created_time", jsonNode.findValue("created_time"));
-			feature.properties.put("source_type", "Instagram");
-			
-			JsonNode image = jsonNode.findPath("standard_resolution");
-			feature.properties.put("standard_resolution", image.findValue("url"));
-			
-			JsonNode caption = jsonNode.findPath("caption");
-			feature.properties.put("description", caption.findValue("text"));
-			
-			JsonNode tags = jsonNode.findValue("tags");
-			feature.properties.put("tags", tags);
-			
-			JsonNode user = jsonNode.findValue("user");
-			feature.properties.put("full_name", user.get("full_name"));
+			JsonNode childNode = insta_feeds.get(i);
+			Feature feature = instaToGeoJson(childNode);
 			
 			features.add(feature);
 			
@@ -125,6 +131,54 @@ public class InstagramParser extends Controller{
 		
 		
 		return features;
+	}
+
+
+	/**
+	 * @param jsonNode
+	 * @return
+	 */
+	private static Feature instaToGeoJson(JsonNode jsonNode) 
+	{
+		//String type  = jsonNode.findValue("type").asText();
+		
+		String id  = jsonNode.get("id").asText();
+		JsonNode location = jsonNode.findValue("location");
+		double latitude = location.findValue("latitude").asDouble();
+		double longitude = location.findValue("longitude").asDouble();
+
+		Geometry geometry = new Point(longitude, latitude);
+		
+		Feature feature = new Feature(geometry);
+		feature.id = id;
+		
+		HashMap<String, Object> properties = new HashMap<String, Object>();
+		
+		
+		properties.put("created_time", jsonNode.get("created_time").asLong());
+		properties.put("source_type", "Instagram");
+		
+		JsonNode image = jsonNode.findPath("standard_resolution");
+		properties.put("standard_resolution", image.findValue("url"));
+		
+		JsonNode caption = jsonNode.findPath("caption");
+		properties.put("description", caption.findValue("text"));
+		
+		JsonNode tags = jsonNode.findValue("tags");
+		properties.put("tags", tags);
+		
+		JsonNode user = jsonNode.findValue("user");
+		properties.put("full_name", user.get("full_name"));
+		
+		feature.setProperties(properties);
+		
+		//Save instagram features to local db
+		/*if (Feature.find().byId(id) == null) {
+			feature.insert();
+		}*/
+		
+		
+		return feature;
 	}
 	
 	

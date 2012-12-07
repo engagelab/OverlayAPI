@@ -3,9 +3,9 @@ package controllers;
 import static play.libs.Json.toJson;
 import helpers.FeatureCollection;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 
 import models.Feature;
 import models.HashTagTable;
@@ -18,15 +18,17 @@ public class HashTagManager extends Controller{
 	
 	public static Result fetchGeoFeaturesByTag(String hashTag)
 	{
-		HashTagTable table = HashTagTable.byTag(hashTag);
-		if (table == null) {
-			//JSONObject empty = new JSONObject();
-			return ok(toJson(""));
+		HashTagTable hashTagTable = HashTagTable.byTag(hashTag);
+		if (hashTagTable == null) {
+			List<String> empty = new ArrayList<String>();
+			return ok(toJson(empty));
+		}
+		else {
+			List<Feature> featureslList = hashTagTable.features;
+			FeatureCollection features = new FeatureCollection(featureslList);
+			return ok(toJson(features));
 		}
 		
-		List<Feature> featureslList = table.features;
-		FeatureCollection features = new FeatureCollection(featureslList);
-		return ok(toJson(features));
 	}
 	
 	public static void saveFeatureRefInHashTable(Set<String> tags, Feature feature)

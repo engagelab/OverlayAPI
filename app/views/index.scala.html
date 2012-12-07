@@ -1,20 +1,15 @@
-@(feature: Feature, description: Html)
+@(feature: Feature, content: Html)
 
 @import helper._
 
 @main(title ="Feature Information") {
 
- 
 
-	 <div class="profile-data">
-	
-	 
-	 </div>
-	 <div id="image-holder">
-	 <img src=@feature.properties.get("standard_resolution") alt="Smiley face" height="612" width="612">
-	 </div>
 	 <div id="image-description">
-	  <a href='http://localhost:9000/user/@feature.properties.get("username")'><strong>@feature.properties.get("username")</strong></a>
-	 @description</div>
+	  <a href='http://localhost:9000/user/@feature.properties.get("facebook_id")'><strong>@feature.properties.get("full_name")</strong></a>
+	 @content</div>
 	
 }
+
+
+

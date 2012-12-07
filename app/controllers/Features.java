@@ -16,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -113,7 +114,13 @@ public class Features extends Controller {
 		
 		//HTML Content url for the Feature
 		proMap.put("descr_url", "content/"+geoFeature.id);
-				
+		
+		
+		//add timestamp
+		Date date = new Date();
+	    long dateInLong = date.getTime();
+	    proMap.put("created_time", dateInLong);
+		
 		geoFeature.setProperties(proMap);
 		geoFeature.insert();
 		

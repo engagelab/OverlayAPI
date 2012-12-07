@@ -3,6 +3,7 @@ package controllers;
 import static play.libs.Json.toJson;
 import helpers.FeatureCollection;
 
+import java.util.ArrayList;
 import java.util.List;
 import models.Feature;
 import models.User;
@@ -22,8 +23,8 @@ public class Users extends Controller{
 	{
 		User user = User.byfacebook_id(facebook_id);
 		if (user == null) {
-			//JSONObject empty = new JSONObject();
-			return ok(toJson(""));
+			List<String> empty = new ArrayList<String>();
+			return ok(toJson(empty));
 		}
 		
 		List<Feature> featureslList = user.features;
