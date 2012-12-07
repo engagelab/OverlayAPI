@@ -6,7 +6,15 @@
 
 
 	 <div id="image-description">
-	  <a href='http://localhost:9000/user/@feature.properties.get("facebook_id")'><strong>@feature.properties.get("full_name")</strong></a>
+	 
+	 <td>
+  			<img alt="User" src="@routes.Assets.at("img/user.png")" width=20 height=20 style="vertical-align: middle;">
+  			<a href='http://localhost:9000/user/@feature.properties.get("facebook_id")'><strong>@feature.properties.get("full_name")</strong></a>
+
+	</td>
+	 <br>
+	 <br>
+	 
 	 @content</div>
 	
 }
