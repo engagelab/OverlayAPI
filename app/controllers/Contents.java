@@ -20,7 +20,7 @@ public class Contents extends Controller{
 		else {
 			String decString = feature.properties.get("description").toString();
 			decString = decString.replaceAll("^\"|\"$", "");
-			String description = TwitterHelper.parse(decString);
+			String description = TwitterHelper.parse(decString, "Overlay");
 			String image = "<div id=\"image-holder\"> " +
                     "<img src="+feature.properties.get("standard_resolution").toString()+" alt=\"Smiley face\"  width=\"612\" height=\"612\" > " +
                     "</div> " ;
@@ -43,7 +43,7 @@ public class Contents extends Controller{
 			feature = InstagramParser.getInstaByMediaId(id);
 			String decString = feature.properties.get("description").toString();
 			decString = decString.replaceAll("^\"|\"$", "");
-			String description = TwitterHelper.parse(decString);
+			String description = TwitterHelper.parse(decString, "Instagram");
 			//description = description.replace('\"', ' ');
 			String image = "<div id=\"image-holder\"> " +
                     "<img src="+feature.properties.get("standard_resolution").toString()+" alt=\"Smiley face\"> " +

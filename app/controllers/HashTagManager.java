@@ -1,7 +1,7 @@
 package controllers;
 
 import static play.libs.Json.toJson;
-import helpers.FeatureCollection;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,16 +19,25 @@ public class HashTagManager extends Controller{
 	public static Result fetchGeoFeaturesByTag(String hashTag)
 	{
 		HashTagTable hashTagTable = HashTagTable.byTag(hashTag);
-		if (hashTagTable == null) {
-			List<String> empty = new ArrayList<String>();
-			return ok(toJson(empty));
-		}
-		else {
-			List<Feature> featureslList = hashTagTable.features;
-			FeatureCollection features = new FeatureCollection(featureslList);
-			return ok(toJson(features));
+		List<Feature> features = new ArrayList<Feature>();
+		
+		if (hashTagTable != null) {
+			List<Feature> overlayFeatures = hashTagTable.features;
+			features.addAll(overlayFeatures);
 		}
 		
+		List<Feature> instaFeatures;
+		try {
+			instaFeatures = InstagramParser.searchInstaPOIsByTag(hashTag);
+			features.addAll(instaFeatures);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+
+		return ok(toJson(features));
+
+
 	}
 	
 	public static void saveFeatureRefInHashTable(Set<String> tags, Feature feature)

@@ -101,7 +101,7 @@ public class Features extends Controller {
 		proMap.put("tags", tags);
 		
 		//save url to both standard and instagram image
-		proMap.put("standard_resolution", "http://localhost:9000/image/"+standard_resolution);
+		proMap.put("standard_resolution", standard_resolution);
 		//proMap.put("low_resolution", "http://localhost:9000/image/"+low_resolution);
 		
 		//HTML Content url for the Feature
@@ -188,8 +188,8 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 				
 
 		// Parse the decription tweet to plain HTML
-		String HTMLdescriptionString = TwitterHelper.parse(description);
-		proMap.put("description", HTMLdescriptionString);
+//		String HTMLdescriptionString = TwitterHelper.parse(description,"Overlay");
+//		proMap.put("description", HTMLdescriptionString);
 		
 		Set<String> tags = TwitterHelper.searchHashTags(description);
 		proMap.put("tags", tags);
@@ -237,7 +237,7 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 		Double lat22 = Double.valueOf(lat2);
 	
 		List<Feature> features = Feature.find().disableValidation().field("geometry.coordinates").within(lng11, lat11, lng22, lat22).asList();	
-		List<Feature> instaPOIs = InstagramParser.getInstaPOIs(lng1, lat1, lng2, lat2);
+		List<Feature> instaPOIs = InstagramParser.searchInstaPOIsByBBox(lng1, lat1, lng2, lat2);
 		features.addAll(instaPOIs);
 		return ok(toJson(features));
 	}

@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.NullNode;
 
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -43,7 +44,7 @@ public class InstagramParser extends Controller{
 	 */
 	public static Result getPOIs(String lng1, String lat1,String lng2, String lat2) throws Exception 
 	{
-		List<Feature> features = getInstaPOIs(lng1, lat1, lng2, lat2);
+		List<Feature> features = searchInstaPOIsByBBox(lng1, lat1, lng2, lat2);
 		return ok(toJson(features));
 		
 	}
@@ -72,10 +73,10 @@ public class InstagramParser extends Controller{
 			return new Feature();
 		}
 			
-		}
+	}
 	
 	
-	public static List<Feature> getInstaPOIs(String lng1, String lat1,String lng2, String lat2) throws Exception
+	public static List<Feature> searchInstaPOIsByBBox(String lng1, String lat1,String lng2, String lat2) throws Exception
 	{
 		String describeService = "https://api.instagram.com/v1/media/search";
 		
@@ -99,17 +100,19 @@ public class InstagramParser extends Controller{
 		//List<Feature> geoJSON = new Arr
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode actualObj = mapper.readTree(file);
-		//TODO: add validation if the response type is not 200 then skip the rest process
-		if (actualObj.findPath("meta").get("code").toString().equalsIgnoreCase("200")) {
+		// TODO: add validation if the response type is not 200 then skip the
+		// rest process
+		if (actualObj.findPath("meta").get("code").toString()
+				.equalsIgnoreCase("200")) 
+		{
 			List<Feature> geoJSON = onResponseReceived(actualObj);
 			return geoJSON;
-			
-		}
-		else {
+
+		} else {
 			return new ArrayList<Feature>();
 		}
-			
-		}
+
+	}
 		
 	
 	
@@ -132,6 +135,41 @@ public class InstagramParser extends Controller{
 		
 		return features;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	public static List<Feature> searchInstaPOIsByTag(String tag) throws Exception
+	{
+		
+		String url = "https://api.instagram.com/v1/tags/"+tag+"/media/recent?client_id=a80dd450be84452a91527609a4eae97b";
+		String file = doRequest(url);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode actualObj = mapper.readTree(file);
+		// TODO: add validation if the response type is not 200 then skip the
+		// rest process
+		if (actualObj.findPath("meta").get("code").toString()
+				.equalsIgnoreCase("200")) 
+		{
+			List<Feature> geoJSON = onResponseReceived(actualObj);
+			return geoJSON;
+
+		} else {
+			return new ArrayList<Feature>();
+		}
+
+	}
+	
+	
+	
+	
+	
+	
 
 
 	/**
@@ -144,10 +182,18 @@ public class InstagramParser extends Controller{
 		
 		String id  = jsonNode.get("id").asText();
 		JsonNode location = jsonNode.findValue("location");
-		double latitude = location.findValue("latitude").asDouble();
-		double longitude = location.findValue("longitude").asDouble();
-
-		Geometry geometry = new Point(longitude, latitude);
+		
+		
+		Geometry geometry;
+		//check if location node is not null
+		if (!location.isNull()) {
+			double latitude = location.findValue("latitude").asDouble();
+			double longitude = location.findValue("longitude").asDouble();
+			 geometry = new Point(longitude, latitude);
+		}
+		else {
+			geometry = new Point();
+		}
 		
 		Feature feature = new Feature(geometry);
 		feature.id = id;

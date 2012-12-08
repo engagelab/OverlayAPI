@@ -61,7 +61,7 @@ public class MapingSessions extends Controller{
 		return ok(createForm.render(sessionForm2));
 
 	}
-	
+		
 	
 	
 	/**
