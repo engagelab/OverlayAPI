@@ -3,8 +3,10 @@ package controllers;
 import leodagdag.play2morphia.Blob;
 import leodagdag.play2morphia.MorphiaPlugin;
 import models.Feature;
+import models.MappingSession;
 import net.coobird.thumbnailator.Thumbnails;
 
+import external.InstagramParser;
 import geometry.Geometry;
 import geometry.Point;
 import helpers.FeatureCollection;
@@ -109,7 +111,6 @@ public class Features extends Controller {
 		
 		proMap.put("source_type", "overlay");
 		
-		
 		Feature geoFeature = new Feature(geometry);
 		
 		//HTML Content url for the Feature
@@ -122,7 +123,13 @@ public class Features extends Controller {
 	    proMap.put("created_time", dateInLong);
 		
 		geoFeature.setProperties(proMap);
+		
 		geoFeature.insert();
+		
+		//Add this feature to perticular session
+		String seesion_id = node.get("session_id").asText();
+		MappingSession session = MappingSession.find().byId(seesion_id);
+		session.features.add(geoFeature);
 		
 		
 		//TODO: move these task to Feature Model

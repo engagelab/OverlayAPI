@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import external.InstagramParser;
+
 import models.Feature;
 import models.HashTagTable;
 import play.mvc.Controller;

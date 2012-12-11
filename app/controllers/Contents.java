@@ -1,5 +1,6 @@
 package controllers;
 
+import external.InstagramParser;
 import helpers.TwitterHelper;
 import models.Feature;
 import play.api.templates.Html;

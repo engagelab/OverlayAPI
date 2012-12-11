@@ -47,7 +47,10 @@ public class Feature extends Model
 	
 	public Feature(Geometry geometry) {
 		this.geometry = geometry;
-		properties = new HashMap<String, Object>();
+		if (properties == null) {
+			properties = new HashMap<String, Object>();
+		}
+		
 	}
 	
 	public void setProperties(HashMap<String, Object> props){

@@ -19,9 +19,9 @@ public class Users extends Controller{
 
 	
 	
-	public static Result fetchGeoFeaturesByUser(String facebook_id)
+	public static Result fetchGeoFeaturesByUser(String id)
 	{
-		User user = User.byfacebook_id(facebook_id);
+		User user = User.find().byId(id);
 		if (user == null) {
 			List<String> empty = new ArrayList<String>();
 			return ok(toJson(empty));
@@ -32,16 +32,16 @@ public class Users extends Controller{
 		return ok(toJson(features));
 	}
 	
-	public static void saveFeatureRefForUser(String facebook_id,String full_name, Feature feature)
+	public static void saveFeatureRefForUser(String id,String full_name, Feature feature)
 	{
 		
-			if (User.byfacebook_id(facebook_id)==null) {
-				User user = new User(facebook_id, full_name);
+			if (User.find().byId(id)==null) {
+				User user = new User(id, full_name);
 				user.features.add(feature);
 				user.update();
 			}
 			else {
-				User user = User.byfacebook_id(facebook_id);
+				User user = User.find().byId(id);
 				user.features.add(feature);
 				user.update();
 

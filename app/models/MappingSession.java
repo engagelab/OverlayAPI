@@ -4,10 +4,9 @@ import geometry.Geometry;
 import geometry.Point;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
-
 import org.bson.types.ObjectId;
 
 import com.google.code.morphia.annotations.Entity;
@@ -27,23 +26,10 @@ public class MappingSession extends Model
 	@Id
 	public String id = new ObjectId().toString();
 	
-	//title is more description then using the name
-	public String title;
-	
-	public String contextual_info;
-	
-	public Set<String> tags;
-	
-	public double []boundingBox;
-	
-	public int nPOIs;
-	
-	public String facebook_group_name;
+	public HashMap<String, Object> properties;
 	
 	@Reference
 	public List<Feature> features;
-
-	public String facebook_id;
 	
 	
 	public static Model.Finder<String, MappingSession> find()
@@ -53,22 +39,13 @@ public class MappingSession extends Model
 	
 	}
 	
-	public MappingSession() {
-		// TODO Auto-generated constructor stub
-	}
 
-	public MappingSession(String facebook_id, String title, String contexual_info,Set<String> tags, double[] boundingBox, int nPOIs, String facebook_group_name) {
-		this.facebook_id = facebook_id;
-		this.title = title;
-		this.contextual_info = contexual_info;
-		this.tags = tags;
-		this.boundingBox=boundingBox;
-		this.nPOIs=nPOIs;
-		this.facebook_group_name=facebook_group_name;
+	public MappingSession() {
+
 		if(features == null)
 		{
 			features = new ArrayList<Feature>();
-			features = createRandomPOIsWithinBoundingBox(boundingBox, nPOIs);
+			//features = createRandomPOIsWithinBoundingBox(boundingBox, nPOIs);
 		}
 	}
 	
@@ -79,7 +56,7 @@ public class MappingSession extends Model
 	 * double random = new Random().nextDouble();
 		double result = start + (random * (end - start));
 	 * */
-	private  List<Feature> createRandomPOIsWithinBoundingBox(double[] boundingBox, int nPOIs) 
+	public  List<Feature> createRandomPOIsWithinBoundingBox(double[] boundingBox, int nPOIs) 
 	{
 		
 		double lng1 = boundingBox[0];
@@ -103,20 +80,5 @@ public class MappingSession extends Model
 		    }
         return features;
     }
-	
-	
-
-	/*				MongoDB Queries				*/
-	
-	public static MappingSession byTitle(String title) {
-        return find().field("title").equal(title).get();
-    }
-	
-	public static MappingSession byGroup(String facebook_group_name) {
-        return find().field("facebook_group_name").equal(facebook_group_name).get();
-    }
-	
-	
-	
 	
 }

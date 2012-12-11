@@ -1,6 +1,4 @@
-package controllers;
-
-import static play.libs.Json.toJson;
+package external;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -11,9 +9,6 @@ import java.util.List;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import play.mvc.Controller;
-import play.mvc.Result;
-import external.*;
 import geometry.Geometry;
 import geometry.Point;
 
@@ -22,7 +17,7 @@ import models.*;
 
 
 
-public class InstagramParser extends Controller{
+public class InstagramParser {
 	
 	/**
 	 * This method is used to get the pois from a service and return a GeoJSON
@@ -40,13 +35,13 @@ public class InstagramParser extends Controller{
 	 * @return The GeoJSON response from the original service response
 	 * @throws Exception 
 	 */
-	public static Result getPOIs(String lng1, String lat1,String lng2, String lat2) throws Exception 
-	{
-		List<Feature> features = searchInstaPOIsByBBox(Double.parseDouble(lng1), Double.parseDouble(lat1),
-				Double.parseDouble(lng2), Double.parseDouble(lat2));
-		return ok(toJson(features));
-		
-	}
+//	public static Result getPOIs(String lng1, String lat1,String lng2, String lat2) throws Exception 
+//	{
+//		List<Feature> features = searchInstaPOIsByBBox(Double.parseDouble(lng1), Double.parseDouble(lat1),
+//				Double.parseDouble(lng2), Double.parseDouble(lat2));
+//		return ok(toJson(features));
+//		
+//	}
 	
 	
 	

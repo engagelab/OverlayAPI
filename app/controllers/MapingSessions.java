@@ -5,17 +5,17 @@ import helpers.TwitterHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.bson.types.ObjectId;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
+import external.InstagramParser;
 
 import models.Feature;
 import models.MappingSession;
@@ -32,32 +32,37 @@ public class MapingSessions extends Controller{
 
 	
 	
-	public static Result createX() throws JsonParseException, JsonMappingException, IOException
-	{
-	
-		ObjectMapper mapper = new ObjectMapper();
-		JsonNode data = ctx().request().body().asJson();
-	
-		// Retrieve the bounding box coordinates and bind to Form Request
-		JsonNode boxNode = data.findPath("boundingBox");
-		TypeReference<Double[]> collectionType = new TypeReference<Double[]>(){};
-		Double[]  boundingBox =  mapper.readValue(boxNode, collectionType);
-		
-	
-		Form<MappingSession> sessionForm = form(MappingSession.class);
-	
-		//sessionForm.data().put("boundingBox", boundingBox.toString());
-		Form<MappingSession> sessionForm2 = sessionForm.bind(data, "boundingbox","title");
-		return ok(createForm.render(sessionForm2));
-
-	}
+//	public static Result createX() throws JsonParseException, JsonMappingException, IOException
+//	{
+//	
+//		ObjectMapper mapper = new ObjectMapper();
+//		JsonNode data = ctx().request().body().asJson();
+//	
+//		// Retrieve the bounding box coordinates and bind to Form Request
+//		JsonNode boxNode = data.findPath("boundingBox");
+//		TypeReference<Double[]> collectionType = new TypeReference<Double[]>(){};
+//		Double[]  boundingBox =  mapper.readValue(boxNode, collectionType);
+//		
+//	
+//		Form<MappingSession> sessionForm = form(MappingSession.class);
+//	
+//		//sessionForm.data().put("boundingBox", boundingBox.toString());
+//		Form<MappingSession> sessionForm2 = sessionForm.bind(data, "boundingbox","title");
+//		return ok(createForm.render(sessionForm2));
+//
+//	}
 	
 	
 	public static Result create() throws JsonParseException, JsonMappingException, IOException
 	{
 	
 		ObjectMapper mapper = new ObjectMapper();
-		JsonNode data = ctx().request().body().asJson();
+		JsonNode node = ctx().request().body().asJson();
+		
+		JsonNode properties = node.findPath("properties");
+		TypeReference<HashMap<String, Object>> collectionType = new TypeReference<HashMap<String, Object>>(){};
+		HashMap<String, Object> proMap = mapper.readValue(properties, collectionType);
+		
 	
 		// Retrieve the bounding box coordinates and bind to Form Request
 		JsonNode boxNode = data.findPath("boundingBox");
@@ -73,7 +78,7 @@ public class MapingSessions extends Controller{
 		String facebook_group_name = data.get("facebook_group_name").asText();
 		String facebook_id = data.get("facebook_id").asText();
 		
-		MappingSession session = new MappingSession(facebook_id , title, contexual_info,tags, boundingBox, nPOIs, facebook_group_name);
+		MappingSession session = new MappingSession();
 		session.insert();
 		return ok(toJson(session));
 

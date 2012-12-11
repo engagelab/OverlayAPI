@@ -23,9 +23,8 @@ public class User extends Model
 
 	
 	@Id
-	public String id = new ObjectId().toString();
+	public String id;
 	
-	public String facebook_id;
 	public String full_name;
 	
 	@Reference
@@ -48,20 +47,17 @@ public class User extends Model
 	
 
 	
-	public User(String facebook_id, String full_name) {
+	public User(String id, String full_name) {
 		
 		if (features == null) {
 			features = new ArrayList<Feature>();
 		}
 		
-		this.facebook_id = facebook_id;
+		this.id = id;
 	}
 	
 	
-	/*			Mongo Queries*/
-	public static User byfacebook_id(String facebook_id) {
-        return find().field("facebook_id").equal(facebook_id).get();
-    }
+
 	
 	
 	
