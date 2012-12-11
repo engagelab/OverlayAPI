@@ -26,8 +26,9 @@ GET				/instagram/:id				controllers.Contents.contentOfInstaPOI(id:String)
 
 ##### Mapping Sessions ######
 # Add Session
-GET     		/session/new              	controllers.MapingSessions.create()
+POST     		/session/new              	controllers.MapingSessions.create()
 POST     		/session                  	controllers.MapingSessions.save()
+GET				/session/f/:id				controllers.MapingSessions.fetchSessionById(id:String)
 
 ##### External Content
 GET				/external					controllers.InstagramParser.getPOIs(lon1:String, lat1:String, lon2:String, lat2:String)

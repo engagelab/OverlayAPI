@@ -76,7 +76,7 @@ public class Downloader {
 			throw new Exception("Error null url");
 		try {
 
-			long startTime = System.currentTimeMillis();
+			//long startTime = System.currentTimeMillis();
 
 			in = new BufferedInputStream(openConnection(mapURL),
 					Constants.IO_BUFFER_SIZE);
@@ -91,8 +91,6 @@ public class Downloader {
 				if (listener != null) {
 					listener.onBytesDownloaded(read);
 				}
-				
-
 				// System.gc();
 			}
 			out.flush();

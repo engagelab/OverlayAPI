@@ -11,8 +11,6 @@ import java.util.List;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.NullNode;
-
 import play.mvc.Controller;
 import play.mvc.Result;
 import external.*;
@@ -44,7 +42,8 @@ public class InstagramParser extends Controller{
 	 */
 	public static Result getPOIs(String lng1, String lat1,String lng2, String lat2) throws Exception 
 	{
-		List<Feature> features = searchInstaPOIsByBBox(lng1, lat1, lng2, lat2);
+		List<Feature> features = searchInstaPOIsByBBox(Double.parseDouble(lng1), Double.parseDouble(lat1),
+				Double.parseDouble(lng2), Double.parseDouble(lat2));
 		return ok(toJson(features));
 		
 	}
@@ -76,11 +75,11 @@ public class InstagramParser extends Controller{
 	}
 	
 	
-	public static List<Feature> searchInstaPOIsByBBox(String lng1, String lat1,String lng2, String lat2) throws Exception
+	public static List<Feature> searchInstaPOIsByBBox(double lng1, double lat1,double lng2, double lat2) throws Exception
 	{
 		String describeService = "https://api.instagram.com/v1/media/search";
 		
-		String url = buildRequest(describeService, Double.valueOf(lat1),Double.valueOf(lng1),Double.valueOf(lat2),Double.valueOf(lng2));
+		String url = buildRequest(describeService, lng1,lat1,lng2,lat2);
 
 		String file = doRequest(url);
 		
@@ -229,8 +228,8 @@ public class InstagramParser extends Controller{
 	
 	
 
-	public static String buildRequest(String describeService, double lat1,
-			double lng1, double lat2, double lng2) throws UnsupportedEncodingException 
+	public static String buildRequest(String describeService, double lng1,
+			double lat1, double lng2, double lat2) throws UnsupportedEncodingException 
 	{
 		
 		double center[] = new double[2];

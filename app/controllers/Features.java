@@ -237,7 +237,7 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 		Double lat22 = Double.valueOf(lat2);
 	
 		List<Feature> features = Feature.find().disableValidation().field("geometry.coordinates").within(lng11, lat11, lng22, lat22).asList();	
-		List<Feature> instaPOIs = InstagramParser.searchInstaPOIsByBBox(lng1, lat1, lng2, lat2);
+		List<Feature> instaPOIs = InstagramParser.searchInstaPOIsByBBox(lng11, lat11, lng22, lat22);
 		features.addAll(instaPOIs);
 		return ok(toJson(features));
 	}
