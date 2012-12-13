@@ -1,5 +1,7 @@
 package external;
 
+import static play.libs.Json.toJson;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -9,6 +11,8 @@ import java.util.List;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+
+import data.Images;
 import geometry.Geometry;
 import geometry.Point;
 
@@ -198,8 +202,11 @@ public class InstagramParser {
 		properties.put("created_time", jsonNode.get("created_time").asLong());
 		properties.put("source_type", "Instagram");
 		
-		JsonNode image = jsonNode.findPath("standard_resolution");
-		properties.put("standard_resolution", image.findValue("url"));
+		//save url to both standard and instagram image
+		JsonNode image = jsonNode.findPath("images");
+		properties.put("images", image);
+		
+		
 		
 		JsonNode caption = jsonNode.findPath("caption");
 		properties.put("description", caption.findValue("text"));
@@ -208,7 +215,7 @@ public class InstagramParser {
 		properties.put("tags", tags);
 		
 		JsonNode user = jsonNode.findValue("user");
-		properties.put("full_name", user.get("full_name"));
+		properties.put("user", user);
 		
 		feature.setProperties(properties);
 		
