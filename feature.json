@@ -1,5 +1,4 @@
 {
-	"id" : "50b879e03004d5c4f76067a5",
     "type": "Feature",
     "geometry":
                 {
@@ -14,13 +13,15 @@
                    	"descr_url": "",
                		"icon_url" : "",
                		"source_type": "empty",
-               		"session": {
-               					"id":""
-               				}
+               		"session_id":"session id",
                		"user":{
                					"id":"facebook id",
-               					"full_name":"facebook full name"
+               					"full_name":"facebook full name",
                					"location":[10.756731033325195,59.9238826969285]
+               				},
+               		"images":{
+               					"standard_resolution":"",
+               					"thumbnail":""
                				}
                 }
 }
