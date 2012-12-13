@@ -26,10 +26,10 @@ GET				/instagram/:id				controllers.Contents.contentOfInstaPOI(id:String)
 
 ##### Mapping Sessions ######
 # Add Session
-POST     		/project/new              	controllers.Sessions.create()
-#POST     		/project                  	controllers.Sessions.save()
-GET				/project/:id				controllers.Sessions.fetchProjectById(id:String)
-DELETE			/project/:id/:user_id		controllers.Sessions.delete(id:String, user_id:String)
+POST     		/session/new              	controllers.Sessions.create()
+#POST     		/session                  	controllers.Sessions.save()
+GET				/session/:id				controllers.Sessions.fetchProjectById(id:String)
+DELETE			/session/:id/:user_id		controllers.Sessions.delete(id:String, user_id:String)
 
 ##### External Content
 #GET				/external				controllers.InstagramParser.getPOIs(lon1:String, lat1:String, lon2:String, lat2:String)
