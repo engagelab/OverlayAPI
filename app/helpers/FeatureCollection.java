@@ -19,7 +19,7 @@ public class FeatureCollection {
 		this.features = features;
 	}
 	
-	public Feature[] getFeatures() {
-		return features.toArray(new Feature[0]);
+	public List<Feature> getFeatures() {
+		return features;
 	}
 }

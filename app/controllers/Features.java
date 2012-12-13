@@ -258,12 +258,6 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 	
 	
 	
-	
-	
-	
-	
-	
-	
 	/* To enble geoo spacial indexing
 	 * db.Feature.ensureIndex({"geometry.coordinates":"2d"});
 	 * */

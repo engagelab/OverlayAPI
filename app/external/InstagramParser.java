@@ -198,6 +198,14 @@ public class InstagramParser {
 		
 		HashMap<String, Object> properties = new HashMap<String, Object>();
 		
+		String description = (String) properties.get("description");
+		
+		//Formulate the label of the POI, using first sentence in the description
+		String delims = "[.,?!]+";
+		String[] tokens = description.split(delims);
+		String name = tokens[0];
+		properties.put("name", name);
+		
 		
 		properties.put("created_time", jsonNode.get("created_time").asLong());
 		properties.put("source_type", "Instagram");
