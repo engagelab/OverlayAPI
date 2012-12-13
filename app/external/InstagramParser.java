@@ -213,13 +213,17 @@ public class InstagramParser {
 		JsonNode caption = jsonNode.findPath("caption");
 		properties.put("description", caption.findValue("text"));
 		
-		String description = caption.findValue("text").asText();
+		if (caption.findValue("text").asText() != null) {
+			String description = caption.findValue("text").asText();
+			
+			//Formulate the label of the POI, using first sentence in the description
+			String delims = "[.,?!]+";
+			String[] tokens = description.split(delims);
+			String name = tokens[0];
+			properties.put("name", name);
+			
+		}
 		
-		//Formulate the label of the POI, using first sentence in the description
-		String delims = "[.,?!]+";
-		String[] tokens = description.split(delims);
-		String name = tokens[0];
-		properties.put("name", name);
 		
 		JsonNode tags = jsonNode.findValue("tags");
 		properties.put("tags", tags);
