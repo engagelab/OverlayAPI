@@ -198,13 +198,7 @@ public class InstagramParser {
 		
 		HashMap<String, Object> properties = new HashMap<String, Object>();
 		
-		String description = (String) properties.get("description");
 		
-		//Formulate the label of the POI, using first sentence in the description
-		String delims = "[.,?!]+";
-		String[] tokens = description.split(delims);
-		String name = tokens[0];
-		properties.put("name", name);
 		
 		
 		properties.put("created_time", jsonNode.get("created_time").asLong());
@@ -218,6 +212,14 @@ public class InstagramParser {
 		
 		JsonNode caption = jsonNode.findPath("caption");
 		properties.put("description", caption.findValue("text"));
+		
+		String description = caption.findValue("text").asText();
+		
+		//Formulate the label of the POI, using first sentence in the description
+		String delims = "[.,?!]+";
+		String[] tokens = description.split(delims);
+		String name = tokens[0];
+		properties.put("name", name);
 		
 		JsonNode tags = jsonNode.findValue("tags");
 		properties.put("tags", tags);
