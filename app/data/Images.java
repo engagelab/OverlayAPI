@@ -4,9 +4,9 @@ import external.Constants;
 
 public class Images {
 	
-	public Image low_resolution;
-	public Image thumbnail;
-	public Image standard_resolution;
+	public BasicImage low_resolution;
+	public BasicImage thumbnail;
+	public BasicImage standard_resolution;
 	
 	public Images() {
 		
@@ -15,15 +15,15 @@ public class Images {
 	public Images(String standard_resolution) {
 		
 		String url = Constants.SERVER_NAME+"/image/"+standard_resolution;
-		this.standard_resolution = new Image(url, 612, 612);
-		this.low_resolution = new Image();
-		this.thumbnail = new Image();
+		this.standard_resolution = new BasicImage(url, 612, 612);
+		this.low_resolution = new BasicImage();
+		this.thumbnail = new BasicImage();
 		
 	}
 	
 	
 	
-	public Images(Image low_resolution, Image thumbnail, Image standard_resolution) 
+	public Images(BasicImage low_resolution, BasicImage thumbnail, BasicImage standard_resolution) 
 	{
 		this.low_resolution = low_resolution;
 		this.thumbnail = thumbnail;

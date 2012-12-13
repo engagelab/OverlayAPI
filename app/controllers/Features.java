@@ -6,6 +6,7 @@ import models.Feature;
 import models.Session;
 import net.coobird.thumbnailator.Thumbnails;
 
+import data.BasicImage;
 import data.Images;
 import external.Constants;
 import external.InstagramParser;
@@ -52,7 +53,7 @@ public class Features extends Controller {
 
 	public static Result createGeoFeature() throws JsonParseException, JsonMappingException, IOException {
 		
-		// Extract Image from Multipart data
+		// Extract BasicImage from Multipart data
 		FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
 		String standard_resolution = saveImageFile(filePart.getFile(), filePart.getContentType());
 		//String low_resolution = convertToInstagramImage(filePart.getFile(),filePart.getContentType());
@@ -106,14 +107,16 @@ public class Features extends Controller {
 		properties.put("tags", tags);
 		
 		//save url to both standard and instagram image
-		Images images = new Images(standard_resolution);
-		properties.put("images", toJson(images));
-		//properties.put("low_resolution", "http://localhost:9000/image/"+low_resolution);
+		//BasicImage image = new BasicImage(standard_resolution);
+		
+		
+		//properties.put("images", im);
+		properties.put("standard_resolution", Constants.SERVER_NAME+"/image/"+standard_resolution);
 		
 		properties.put("source_type", "overlay");
 		
 		//HTML Content url for the Feature
-		properties.put("descr_url", "/content/"+geoFeature.id);
+		properties.put("descr_url", Constants.SERVER_NAME+"/content/"+geoFeature.id);
 		
 		
 		//add timestamp
@@ -147,7 +150,7 @@ public class Features extends Controller {
 	
 public static Result updateGeoFeature() throws JsonParseException, JsonMappingException, IOException {
 		
-	// Extract Image from Multipart data
+	// Extract BasicImage from Multipart data
 	FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
 	String standard_resolution = saveImageFile(filePart.getFile(), filePart.getContentType());
 	//String low_resolution = convertToInstagramImage(filePart.getFile(),filePart.getContentType());
