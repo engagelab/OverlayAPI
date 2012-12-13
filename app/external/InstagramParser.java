@@ -223,6 +223,9 @@ public class InstagramParser {
 			properties.put("name", name);
 			
 		}
+		else {
+			properties.put("name", "");
+		}
 		
 		
 		JsonNode tags = jsonNode.findValue("tags");
