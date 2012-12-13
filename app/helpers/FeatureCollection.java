@@ -12,7 +12,7 @@ import models.Feature;
 
 
 public class FeatureCollection {
-	public static String typeString = "FeatureCollection";
+	public static String type = "FeatureCollection";
 	private List<Feature> features;
 	
 	public FeatureCollection(List<Feature> features) {
