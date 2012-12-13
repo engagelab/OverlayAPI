@@ -147,68 +147,100 @@ public class Features extends Controller {
 	
 public static Result updateGeoFeature() throws JsonParseException, JsonMappingException, IOException {
 		
-		// Extract Image from Multipart data
-		FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
-		String standard_resolution = saveImageFile(filePart.getFile(), filePart.getContentType());
+	// Extract Image from Multipart data
+	FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
+	String standard_resolution = saveImageFile(filePart.getFile(), filePart.getContentType());
+	//String low_resolution = convertToInstagramImage(filePart.getFile(),filePart.getContentType());
+	//String low_resolution = saveImageFile(convertToInstagramImage(filePart.getFile(), 
+	//									filePart.getContentType()),filePart.getContentType());
+	
+	
+	
+	
+	FilePart jsonFilePart = ctx().request().body().asMultipartFormData().getFile("feature");
+	// Convert json file to JsonNode
+	ObjectMapper mapperj = new ObjectMapper();
+	BufferedReader fileReader = new BufferedReader(
+		new FileReader(jsonFilePart.getFile()));
+	
+	JsonNode node = mapperj.readTree(fileReader);
+	
+	//JsonNode node = ctx().request().body().asJson();
+	ObjectMapper mapper = new ObjectMapper();
+	
+	//TODO: parse geometry object directly to Java Class from jsonNode
+	//JsonNode geometryNode = node.findPath("geometry");
+	//Point point = fromJson(geometry,Point.class);
+	//String typeString = geometryNode.get("type").asText();
+	//Feature newFeature = fromJson(node, Feature.class);
+	
+//	JsonNode coordinatesNode = node.findPath("coordinates");
+//	TypeReference<Double[]> collectionTypeD = new TypeReference<Double[]>(){};
+//	Double[]  coordinates =  mapper.readValue(coordinatesNode, collectionTypeD);
+//	Geometry geometry = new Point(coordinates[0], coordinates[1]);
+	
+	String id = node.get("id").asText();
+	Feature geoFeature = Feature.find().byId(id);
+	
+	
+	
+	JsonNode propertiesNode = node.findPath("properties");
+	TypeReference<HashMap<String, Object>> collectionType = new TypeReference<HashMap<String, Object>>(){};
+	HashMap<String, Object> properties = mapper.readValue(propertiesNode, collectionType);
 		
-		String low_resolution = convertToInstagramImage(filePart.getFile(),filePart.getContentType());
-		
-		
-		FilePart jsonFilePart = ctx().request().body().asMultipartFormData().getFile("feature");
-		
-		// Convert json file to JsonNode
-		ObjectMapper mapperj = new ObjectMapper();
-		BufferedReader fileReader = new BufferedReader(
-			new FileReader(jsonFilePart.getFile()));
-		JsonNode node = mapperj.readTree(fileReader);
-		
-		
-		//JsonNode node = ctx().request().body().asJson();
-		ObjectMapper mapper = new ObjectMapper();
-		
-		//TODO: parse geometry object directly to Java Class from jsonNode
-		//JsonNode geometryNode = node.findPath("geometry");
-		//Point point = fromJson(geometry,Point.class);
-		//String typeString = geometryNode.get("type").asText();
-		//Feature newFeature = fromJson(node, Feature.class);
-		
-		JsonNode coordinatesNode = node.findPath("coordinates");
-		TypeReference<Double[]> collectionTypeD = new TypeReference<Double[]>(){};
-		Double[]  coordinates =  mapper.readValue(coordinatesNode, collectionTypeD);
-		Geometry geometry = new Point(coordinates[0], coordinates[1]);
-		
-		JsonNode propertiesNode = node.findPath("properties");
-		TypeReference<HashMap<String, Object>> collectionType = new TypeReference<HashMap<String, Object>>(){};
-		HashMap<String, Object> properties = mapper.readValue(propertiesNode, collectionType);
-			
-		String description = (String) properties.get("description");
-		
-		//Formulate the label of the POI, using first sentence in the description
-		String delims = "[.,?!]+";
-		String[] tokens = description.split(delims);
-		String name = tokens[0];
-		properties.put("name", name);
-		
-		//save url to both standard and instagram image
-		properties.put("standard_resolution", "http://localhost:9000/image/"+standard_resolution);
-		properties.put("low_resolution", "http://localhost:9000/image/"+low_resolution);
-				
+	String description = (String) properties.get("description");
+	
+	//Formulate the label of the POI, using first sentence in the description
+	String delims = "[.,?!]+";
+	String[] tokens = description.split(delims);
+	String name = tokens[0];
+	properties.put("name", name);
 
-		// Parse the decription tweet to plain HTML
-//		String HTMLdescriptionString = TwitterHelper.parse(description,"Overlay");
-//		properties.put("description", HTMLdescriptionString);
-		
-		Set<String> tags = TwitterHelper.searchHashTags(description);
-		properties.put("tags", tags);
-		
-		//find and update feature
-		String id = node.get("id").asText();
-		Feature geoFeature = Feature.find().byId(id);
-		geoFeature.geometry = geometry;
-		geoFeature.setProperties(properties);
-		geoFeature.update();
-		
-		return ok(toJson(geoFeature));
+	// TODO: Transfer this process to view content: Parse the decription tweet to plain HTML
+	//String HTMLdescriptionString = TwitterHelper.parse(description);
+	//properties.put("description", HTMLdescriptionString);
+	
+	Set<String> tags = TwitterHelper.searchHashTags(description);
+	properties.put("tags", tags);
+	
+	//save url to both standard and instagram image
+	Images images = new Images(standard_resolution);
+	properties.put("images", toJson(images));
+	//properties.put("low_resolution", "http://localhost:9000/image/"+low_resolution);
+	
+	properties.put("source_type", "overlay");
+	
+	//HTML Content url for the Feature
+	properties.put("descr_url", "/content/"+geoFeature.id);
+	
+	
+	//add timestamp
+	Date date = new Date();
+    long dateInLong = date.getTime();
+    properties.put("created_time", dateInLong);
+	
+	geoFeature.setProperties(properties);
+	
+	geoFeature.update();
+	
+	//Add this feature to perticular session
+	String seesion_id = propertiesNode.get("session_id").asText();
+	Session session = Session.find().byId(seesion_id);
+	if (session != null) {
+		session.features.add(geoFeature);
+	}
+
+	//TODO: move these task to Feature Model
+	//Save feature reference to individual tags
+	HashTagManager.saveFeatureRefInHashTable(tags, geoFeature);
+	
+	//Save Feature reference for perticular user
+	JsonNode user = node.findPath("user");
+	if (!(user.isNull())) {
+		Users.saveFeatureRefForUser(user.get("id").toString(), user.get("full_name").toString(),geoFeature);
+	}
+	
+	return ok(toJson(geoFeature));
 	}
 	
 	
