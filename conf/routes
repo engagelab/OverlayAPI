@@ -14,7 +14,7 @@ GET				/search/:hashTag			 controllers.HashTagManager.fetchGeoFeaturesByTag(hash
 GET				/user/:username				 controllers.Users.fetchGeoFeaturesByUser(username:String)
 
 
-GET				/geo/box/					 controllers.Features.geoFeaturesInBoundingBox(lon1:String, lat1:String, lon2:String, lat2:String)
+GET				/geo/box/					 controllers.Features.geoFeaturesInBoundingBox(lgn1:String, lat1:String, lng2:String, lat2:String)
 
 
 # Geo Content
