@@ -213,7 +213,7 @@ public class InstagramParser {
 		JsonNode caption = jsonNode.findPath("caption");
 		properties.put("description", caption.findValue("text"));
 		
-		if (caption.findValue("text").asText() != null) {
+		if (!(caption.isNull())) {
 			String description = caption.findValue("text").asText();
 			
 			//Formulate the label of the POI, using first sentence in the description
