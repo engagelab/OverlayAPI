@@ -1,7 +1,10 @@
 package data;
 
+import com.google.code.morphia.annotations.Embedded;
+
 import external.Constants;
 
+@Embedded
 public class Images {
 	
 	public BasicImage low_resolution;

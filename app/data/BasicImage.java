@@ -1,6 +1,9 @@
 package data;
 
+import com.google.code.morphia.annotations.Embedded;
 
+
+@Embedded
 public class BasicImage {
 	
 	public String url;
