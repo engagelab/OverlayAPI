@@ -44,6 +44,8 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import com.sun.org.apache.bcel.internal.classfile.Code;
+
 
 
 /**
@@ -98,7 +100,11 @@ public class Downloader {
 
 		} catch (IOException e) {
 
-			throw new Exception(e);
+			//xmldata = "Instagram Internal Error"
+			new Exception(e);
+			String error = e.getMessage();
+			xmldata = error.getBytes();
+			//throw new Exception(e);
 		} finally {
 			Constants.closeStream(in);
 			Constants.closeStream(out);

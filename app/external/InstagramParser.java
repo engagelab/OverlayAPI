@@ -1,7 +1,6 @@
 package external;
 
-import static play.libs.Json.toJson;
-
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -10,9 +9,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import data.Images;
 import geometry.Geometry;
 import geometry.Point;
 
@@ -23,66 +22,99 @@ import models.*;
 
 public class InstagramParser {
 	
-	/**
-	 * This method is used to get the pois from a service and return a GeoJSON
-	 * document with the data retrieved given a lnggitude, latitude and a radius
-	 * in meters.
-	 * 
-	 * @param id
-	 *            The id of the service
-	 * @param lng
-	 *            The lnggitude
-	 * @param lat
-	 *            The latitude
-	 * @param distanceInMeters
-	 *            The distance in meters from the lng, lat
-	 * @return The GeoJSON response from the original service response
-	 * @throws Exception 
-	 */
-//	public static Result getPOIs(String lng1, String lat1,String lng2, String lat2) throws Exception 
-//	{
-//		List<Feature> features = searchInstaPOIsByBBox(Double.parseDouble(lng1), Double.parseDouble(lat1),
-//				Double.parseDouble(lng2), Double.parseDouble(lat2));
-//		return ok(toJson(features));
-//		
-//	}
+
+	//public static String file;
+	
+	public InstagramParser() {
+	}
 	
 	
 	
-	
-	
-	
-	
-	
-	public static Feature getInstaByMediaId(String id) throws Exception
+	public static Feature getInstaByMediaId(String id) 
 	{
 		String url = "https://api.instagram.com/v1/media/"+id+"?client_id=a80dd450be84452a91527609a4eae97b";
-		String file = doRequest(url);
-
-		ObjectMapper mapper = new ObjectMapper();
-		JsonNode actualObj = mapper.readTree(file);
-		//TODO: add validation if the response type is not 200 then skip the rest process
-		if (actualObj.findPath("meta").get("code").toString().equalsIgnoreCase("200")) {
-			Feature geoJSON = instaToGeoJson(actualObj.findValue("data"));
-			return geoJSON;
+		String file = isRequestSuccessful(url);
+		if (file != null) {
 			
-		}
-		else {
-			return new Feature();
-		}
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode actualObj;
+			try {
+				actualObj = mapper.readTree(file);
+				if (actualObj.findPath("meta").get("code").toString().equalsIgnoreCase("200")) {
+					Feature geoJSON = instaToGeoJson(actualObj.findValue("data"));
+					return geoJSON;
+				}
+				else {
+					return new Feature();
+				}
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+				return new Feature();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return new Feature();
+			}
+			// add validation if the response type is not 200 then skip the rest process
+			
+		};
+
+		return new Feature();
 			
 	}
 	
 	
-	public static List<Feature> searchInstaPOIsByBBox(double lng1, double lat1,double lng2, double lat2) throws Exception
+	public static List<Feature> searchInstaPOIsByBBox(double lng1, double lat1,double lng2, double lat2) 
 	{
 		String describeService = "https://api.instagram.com/v1/media/search";
-		
-		String url = buildRequest(describeService, lng1,lat1,lng2,lat2);
 
-		String file = doRequest(url);
+		String url;
+		//String file;
+
+		try {
+			url = buildRequest(describeService, lng1, lat1, lng2, lat2);
+
+			try {
+					String file = isRequestSuccessful(url);
+				if (file != null) {
+					ObjectMapper mapper = new ObjectMapper();
+					JsonNode actualObj;
+					try {
+						actualObj = mapper.readTree(file);
+						if (actualObj.findPath("meta").get("code").toString()
+								.equalsIgnoreCase("200")) {
+							List<Feature> geoJSON = onResponseReceived(actualObj);
+							return geoJSON;
+
+						} else {
+							return new ArrayList<Feature>();
+						}
+
+					} catch (JsonProcessingException e) {
+						//
+						e.printStackTrace();
+					} catch (IOException e) {
+						//  Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+
+
+			} catch (Exception e) {
+				//  Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (UnsupportedEncodingException e) {
+			//  Auto-generated catch block
+			e.printStackTrace();
+			
+		}
+
+		return new ArrayList<Feature>();
+	}
 		
-		//TODO: need to optimize for speed
+		//: need to optimize for speed
 //		return async(
 //			      WS.url(url).get().map(
 //			        new Function<WS.Response, Result>() {
@@ -96,21 +128,11 @@ public class InstagramParser {
 		//return redirect(url);
 		//return ok(url.toString());
 		//List<Feature> geoJSON = new Arr
-		ObjectMapper mapper = new ObjectMapper();
-		JsonNode actualObj = mapper.readTree(file);
-		// TODO: add validation if the response type is not 200 then skip the
+		
+		// : add validation if the response type is not 200 then skip the
 		// rest process
-		if (actualObj.findPath("meta").get("code").toString()
-				.equalsIgnoreCase("200")) 
-		{
-			List<Feature> geoJSON = onResponseReceived(actualObj);
-			return geoJSON;
+		
 
-		} else {
-			return new ArrayList<Feature>();
-		}
-
-	}
 		
 	
 	
@@ -145,21 +167,24 @@ public class InstagramParser {
 	{
 		
 		String url = "https://api.instagram.com/v1/tags/"+tag+"/media/recent?client_id=a80dd450be84452a91527609a4eae97b";
-		String file = doRequest(url);
 		
-		ObjectMapper mapper = new ObjectMapper();
-		JsonNode actualObj = mapper.readTree(file);
-		// TODO: add validation if the response type is not 200 then skip the
-		// rest process
-		if (actualObj.findPath("meta").get("code").toString()
-				.equalsIgnoreCase("200")) 
-		{
-			List<Feature> geoJSON = onResponseReceived(actualObj);
-			return geoJSON;
+		String file = isRequestSuccessful(url);
+		if (file != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode actualObj = mapper.readTree(file);
+			if (actualObj.findPath("meta").get("code").toString()
+					.equalsIgnoreCase("200")) 
+			{
+				List<Feature> geoJSON = onResponseReceived(actualObj);
+				return geoJSON;
 
-		} else {
-			return new ArrayList<Feature>();
+			} else {
+				return new ArrayList<Feature>();
+			}
+			
 		}
+	
+		return new ArrayList<Feature>();
 
 	}
 	
@@ -212,7 +237,7 @@ public class InstagramParser {
 		
 		JsonNode image = jsonNode.findPath("standard_resolution");
 		String standard_resolution = image.get("url").asText();
-		properties.put("standard_resolution", Constants.SERVER_NAME+"/image/"+standard_resolution);
+		properties.put("standard_resolution", standard_resolution);
 
 		
 		
@@ -336,7 +361,7 @@ public class InstagramParser {
 	 * 
 	 * @return The width of the extent
 	 */
-	public static double getWidth(double maxX, double minX) {
+	public double getWidth(double maxX, double minX) {
 		return Math.abs(maxX - minX);
 	}
 
@@ -345,7 +370,7 @@ public class InstagramParser {
 	 * 
 	 * @return The height of the extent
 	 */
-	public static double getHeight(double maxY, double minY) {
+	public  double getHeight(double maxY, double minY) {
 		return Math.abs(maxY - minY);
 	}
 
@@ -356,7 +381,7 @@ public class InstagramParser {
 	 * @return The area
 	 */
 	public double area(double maxX, double minX,double maxY, double minY) {
-		return this.getWidth(maxX,minX) * this.getHeight(maxY,minY);
+		return getWidth(maxX,minX) * getHeight(maxY,minY);
 	}
 	
 	
@@ -374,11 +399,19 @@ public class InstagramParser {
 	 * @return The data downloaded
 	 * @throws Exception
 	 */
-	public static String doRequest(String url) throws Exception {
+	public static String isRequestSuccessful(String url)  {
 		// hacer peticion en segundo plano
 		Downloader d = new Downloader();
 		System.out.println(url);
-		d.downloadFromUrl(url);
-		return new String(d.getData());
+		try {
+			d.downloadFromUrl(url);
+			
+			return new String(d.getData());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			return new String(d.getData());
+		}
+		
 	}
 }
