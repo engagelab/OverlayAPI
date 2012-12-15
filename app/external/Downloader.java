@@ -44,8 +44,6 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import com.sun.org.apache.bcel.internal.classfile.Code;
-
 
 
 /**
@@ -86,6 +84,7 @@ public class Downloader {
 			out = new BufferedOutputStream(dataStream, Constants.IO_BUFFER_SIZE);
 			byte[] b = new byte[8 * 1024];
 			int read;
+			@SuppressWarnings("unused")
 			int total = 0;
 			while ((read = in.read(b)) != -1) {
 				total += read;
