@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
+import javax.swing.OverlayLayout;
 
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
@@ -115,7 +116,8 @@ public class Features extends Controller {
 		
 		//HTML Content url for the Feature
 		properties.put("descr_url", Constants.SERVER_NAME+"/content/"+geoFeature.id);
-		
+		properties.put("icon_url", Constants.SERVER_NAME+"/assets/img/"+"Overlay.png");
+
 		
 		//add timestamp
 		Date date = new Date();
