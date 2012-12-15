@@ -7,21 +7,12 @@
                 },
     "properties":
                 {
-              		"name" : "",
             		"description": "it is #third POI from @fahied",
-                   	"tags": "",
-                   	"descr_url": "",
-               		"icon_url" : "",
-               		"source_type": "empty",
-               		"session_id":"session id",
+               		"source_type": "Overly",
                		"user":{
                					"id":"facebook id",
                					"full_name":"facebook full name",
                					"location":[10.756731033325195,59.9238826969285]
-               				},
-               		"images":{
-               					"standard_resolution":"",
-               					"thumbnail":""
                				}
                 }
 }
