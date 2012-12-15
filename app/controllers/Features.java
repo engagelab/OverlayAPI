@@ -6,8 +6,6 @@ import models.Feature;
 import models.Session;
 import net.coobird.thumbnailator.Thumbnails;
 
-import data.BasicImage;
-import data.Images;
 import external.Constants;
 import external.InstagramParser;
 import geometry.Geometry;
@@ -27,8 +25,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
-import javax.swing.OverlayLayout;
-
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.JsonNode;
@@ -40,8 +36,6 @@ import org.codehaus.jackson.type.TypeReference;
 import com.mongodb.BasicDBObject;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSFile;
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
 import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
@@ -156,6 +150,7 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 		
 	// Extract BasicImage from Multipart data
 	FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
+	@SuppressWarnings("unused")
 	String standard_resolution = saveImageFile(filePart.getFile(), filePart.getContentType());
 	//String low_resolution = convertToInstagramImage(filePart.getFile(),filePart.getContentType());
 	//String low_resolution = saveImageFile(convertToInstagramImage(filePart.getFile(), 
