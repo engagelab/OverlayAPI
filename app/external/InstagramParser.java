@@ -207,8 +207,13 @@ public class InstagramParser {
 		properties.put("source_type", "Instagram");
 		
 		//save url to both standard and instagram image
-		JsonNode image = jsonNode.findPath("images");
-		properties.put("images", image);
+		//JsonNode image = jsonNode.findPath("images");
+		//properties.put("images", image);
+		
+		JsonNode image = jsonNode.findPath("standard_resolution");
+		String standard_resolution = image.get("url").asText();
+		properties.put("standard_resolution", Constants.SERVER_NAME+"/image/"+standard_resolution);
+
 		
 		
 		

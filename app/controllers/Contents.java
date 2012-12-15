@@ -22,10 +22,13 @@ public class Contents extends Controller{
 			String decString = feature.properties.get("description").toString();
 			decString = decString.replaceAll("^\"|\"$", "");
 			String description = TwitterHelper.parse(decString, "Overlay");
-			String image = "<div id=\"image-holder\"> " +
-                    "<img src="+feature.properties.get("standard_resolution").toString()+" alt=\"Smiley face\"  width=\"612\" height=\"612\" > " +
-                    "</div> " ;
+			String image = "";
 			
+			if (feature.properties.get("standard_resolution") != null) {
+				image  = "<div id=\"image-holder\"> " +
+	                    "<img src="+feature.properties.get("standard_resolution").toString()+" alt=\"Smiley face\"  width=\"612\" height=\"612\" > " +
+	                    "</div> " ;
+			}
 			
 			Html content = new Html(image+description);
 			
@@ -45,11 +48,13 @@ public class Contents extends Controller{
 			String decString = feature.properties.get("description").toString();
 			decString = decString.replaceAll("^\"|\"$", "");
 			String description = TwitterHelper.parse(decString, "Instagram");
-			//description = description.replace('\"', ' ');
-			String image = "<div id=\"image-holder\"> " +
-                    "<img src="+feature.properties.get("standard_resolution").toString()+" alt=\"Smiley face\"> " +
-                    "</div> " ;
 			
+			String image = "";
+			if (feature.properties.get("standard_resolution") != null) {
+				image  = "<div id=\"image-holder\"> " +
+	                    "<img src="+feature.properties.get("standard_resolution").toString()+" alt=\"Smiley face\"  width=\"612\" height=\"612\" > " +
+	                    "</div> " ;
+			}
 			
 			Html content = new Html(image+description);
 			
