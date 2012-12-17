@@ -26,7 +26,7 @@ public class Contents extends Controller{
 		}
 		else {
 			String decString = feature.properties.get("description").toString();
-			String meta  = "<meta name = \"viewport\" content = \"width = device-width\">";
+			
 
 			decString = decString.replaceAll("^\"|\"$", "");
 			String description = TwitterHelper.parse(decString, "Overlay");
@@ -38,7 +38,7 @@ public class Contents extends Controller{
 	                    "</div> " ;
 			}
 			
-			Html content = new Html(meta+image+description);
+			Html content = new Html(image+description);
 			
 			
 			return ok(index.render(feature,content));
@@ -61,7 +61,6 @@ public class Contents extends Controller{
 		try {
 			feature = InstagramParser.getInstaByMediaId(id);
 			
-			String meta  = "<meta name = \"viewport\" content = \"width = device-width\">";
 			
 			String decString = feature.properties.get("description").toString();
 			decString = decString.replaceAll("^\"|\"$", "");
@@ -74,7 +73,7 @@ public class Contents extends Controller{
 	                    "</div> " ;
 			}
 			
-			Html content = new Html(meta+image+description);
+			Html content = new Html(image+description);
 			
 			
 			return ok(index.render(feature,content));
