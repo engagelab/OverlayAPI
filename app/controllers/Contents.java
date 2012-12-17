@@ -11,6 +11,12 @@ import views.html.index;
 public class Contents extends Controller{
 	
 	
+	
+	
+	
+	
+	
+	
 	public static Result contentOfFeature(String id)
 	{
 		Feature feature = Feature.find().byId(id);
@@ -20,6 +26,8 @@ public class Contents extends Controller{
 		}
 		else {
 			String decString = feature.properties.get("description").toString();
+			String meta  = "<meta name = \"viewport\" content = \"width = device-width\">";
+
 			decString = decString.replaceAll("^\"|\"$", "");
 			String description = TwitterHelper.parse(decString, "Overlay");
 			String image = "";
@@ -30,7 +38,7 @@ public class Contents extends Controller{
 	                    "</div> " ;
 			}
 			
-			Html content = new Html(image+description);
+			Html content = new Html(meta+image+description);
 			
 			
 			return ok(index.render(feature,content));
@@ -40,11 +48,21 @@ public class Contents extends Controller{
 	}
 	
 	
+	
+	
+	
+	
+	
+	
+	
 	public static Result contentOfInstaPOI(String id)
 	{
 		Feature feature;
 		try {
 			feature = InstagramParser.getInstaByMediaId(id);
+			
+			String meta  = "<meta name = \"viewport\" content = \"width = device-width\">";
+			
 			String decString = feature.properties.get("description").toString();
 			decString = decString.replaceAll("^\"|\"$", "");
 			String description = TwitterHelper.parse(decString, "Instagram");
@@ -56,7 +74,7 @@ public class Contents extends Controller{
 	                    "</div> " ;
 			}
 			
-			Html content = new Html(image+description);
+			Html content = new Html(meta+image+description);
 			
 			
 			return ok(index.render(feature,content));

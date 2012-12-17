@@ -22,11 +22,8 @@ import models.*;
 
 public class InstagramParser {
 	
-
-	//public static String file;
 	
-	public InstagramParser() {
-	}
+	
 	
 	
 	
@@ -61,6 +58,18 @@ public class InstagramParser {
 		return new Feature();
 			
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	public static List<Feature> searchInstaPOIsByBBox(double lng1, double lat1,double lng2, double lat2) 
@@ -136,6 +145,15 @@ public class InstagramParser {
 		
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public static List<Feature> onResponseReceived(JsonNode json)
 	{
 	
@@ -155,6 +173,16 @@ public class InstagramParser {
 		
 		return features;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -187,6 +215,12 @@ public class InstagramParser {
 		return new ArrayList<Feature>();
 
 	}
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -278,6 +312,23 @@ public class InstagramParser {
 	}
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	public static String buildRequest(String describeService, double lng1,
 			double lat1, double lng2, double lat2) throws UnsupportedEncodingException 
@@ -294,11 +345,7 @@ public class InstagramParser {
 		params.put(Param.LNG, String.valueOf(center[1]));
 		params.put(Param.DIST, String.valueOf(radius_outer_circle_of_reactangle));
 		params.put(Param.CLIENTID, "a80dd450be84452a91527609a4eae97b");
-		
-		
-		//Set<String> keys = params.keySet();
-		
-		
+
 		
 		// construct URL
 		StringBuffer paramsBuffer = new StringBuffer();
@@ -356,6 +403,12 @@ public class InstagramParser {
 	
 	
 	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Calculates the width of the extent
 	 * 
@@ -365,6 +418,8 @@ public class InstagramParser {
 		return Math.abs(maxX - minX);
 	}
 
+	
+	
 	/**
 	 * Calculates the height of the extent
 	 * 
@@ -373,6 +428,10 @@ public class InstagramParser {
 	public  double getHeight(double maxY, double minY) {
 		return Math.abs(maxY - minY);
 	}
+	
+	
+	
+	
 
 	
 	/**
@@ -392,7 +451,7 @@ public class InstagramParser {
 
 	/**
 	 * Calls
-	 * {@link Downloader#downloadFromUrl(String, es.prodevelop.gvsig.mini.utiles.Cancellable)}
+	 * {@link Downloader #downloadFromUrl(String, es.prodevelop.gvsig.mini.utiles.Cancellable)}
 	 * 
 	 * @param url
 	 *            The url to request to
@@ -414,4 +473,8 @@ public class InstagramParser {
 		}
 		
 	}
+	
+	
+	
+	
 }

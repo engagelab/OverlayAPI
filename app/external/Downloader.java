@@ -57,6 +57,12 @@ public class Downloader {
 	private byte[] xmldata;
 	private DownloadListener listener;
 
+	
+	
+	
+	
+	
+	
 	/**
 	 * Downloads a file from an http url
 	 * 
@@ -110,6 +116,15 @@ public class Downloader {
 		}
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 
 	/**
@@ -122,6 +137,14 @@ public class Downloader {
 		return xmldata;
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Opens an http connection. By default the connection and read timeouts is
 	 * set to 15 seconds
@@ -139,8 +162,19 @@ public class Downloader {
 		urlconnec.setReadTimeout(15000);
 		return urlconnec.getInputStream();
 	}
+	
+	
+	
+	
+	
+	
 
 	public void setDownloadListener(DownloadListener listener) {
 		this.listener = listener;
 	}
+	
+	
+	
+	
+	
 }

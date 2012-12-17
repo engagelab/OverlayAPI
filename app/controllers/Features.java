@@ -110,7 +110,7 @@ public class Features extends Controller {
 		
 		//HTML Content url for the Feature
 		properties.put("descr_url", Constants.SERVER_NAME+"/content/"+geoFeature.id);
-		properties.put("icon_url", Constants.SERVER_NAME+"/assets/img/"+"Overlay.png");
+		properties.put("icon_url", Constants.SERVER_NAME+"/assets/img/"+"overlay.png");
 
 		
 		//add timestamp
