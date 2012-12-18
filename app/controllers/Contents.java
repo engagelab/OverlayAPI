@@ -34,7 +34,7 @@ public class Contents extends Controller{
 			
 			if (feature.properties.get("standard_resolution") != null) {
 				image  = "<div id=\"image-holder\"> " +
-	                    "<img src="+feature.properties.get("standard_resolution").toString()+" alt=\"Smiley face\"  width=\"612\" height=\"612\" > " +
+	                    "<img src="+feature.properties.get("standard_resolution").toString()+" alt=\"Smiley face\"  width=\"612\" > " +
 	                    "</div> " ;
 			}
 			
