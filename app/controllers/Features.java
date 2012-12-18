@@ -72,7 +72,7 @@ public class Features extends Controller {
 		
 		Feature geoFeature = new Feature(geometry);
 		
-		JsonNode propertiesNode = node.findPath("properties");
+		JsonNode propertiesNode = node.get("properties");
 		TypeReference<HashMap<String, Object>> collectionType = new TypeReference<HashMap<String, Object>>(){};
 		HashMap<String, Object> properties = mapper.readValue(propertiesNode, collectionType);
 			
