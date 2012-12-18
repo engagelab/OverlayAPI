@@ -146,6 +146,22 @@ public class Features extends Controller {
 		return ok(toJson(geoFeature));
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 public static Result updateGeoFeature() throws JsonParseException, JsonMappingException, IOException {
 		
 	// Extract BasicImage from Multipart data
@@ -184,8 +200,6 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 	String id = node.get("id").asText();
 	Feature geoFeature = Feature.find().byId(id);
 	
-	
-	
 	JsonNode propertiesNode = node.findPath("properties");
 	TypeReference<HashMap<String, Object>> collectionType = new TypeReference<HashMap<String, Object>>(){};
 	HashMap<String, Object> properties = mapper.readValue(propertiesNode, collectionType);
@@ -204,17 +218,11 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 	
 	Set<String> tags = TwitterHelper.searchHashTags(description);
 	properties.put("tags", tags);
-	
 	//save url to both standard and instagram image
-	
-
 	//Images images = new Images(standard_resolution);
 //	properties.put("images", toJson(images));
-	
 	//properties.put("low_resolution", "http://localhost:9000/image/"+low_resolution);
-	
 	properties.put("source_type", "overlay");
-	
 	//HTML Content url for the Feature
 	properties.put("descr_url", Constants.SERVER_NAME+"/content/"+geoFeature.id);
 	
@@ -251,6 +259,9 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 
 
 
+
+
+
 	
 	
 	
@@ -259,6 +270,14 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 		List<Feature> featureslList = Feature.find().all();
 		FeatureCollection features = new FeatureCollection(featureslList);
 		return ok(toJson(features));
+	}
+	
+	
+	
+	public static Result featureById(String id)
+	{
+		Feature feature = Feature.find().byId(id);
+		return ok(toJson(feature));
 	}
 	
 	

@@ -12,6 +12,7 @@ DELETE			/geo						 controllers.Features.deleteAGeaoFeature(id:String, author_id
 GET				/geo						 controllers.Features.fetchAllGeoFeautres()
 GET				/search/:hashTag			 controllers.HashTagManager.fetchGeoFeaturesByTag(hashTag:String)
 GET				/user/:username				 controllers.Users.fetchGeoFeaturesByUser(username:String)
+GET				/geo/:id					 controllers.Features.featureById(id:String)
 
 
 GET				/geo/box/					 controllers.Features.geoFeaturesInBoundingBox(lng1:String, lat1:String, lng2:String, lat2:String)
