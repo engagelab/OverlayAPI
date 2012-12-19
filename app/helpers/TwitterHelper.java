@@ -48,7 +48,7 @@ public class TwitterHelper {
 				searchHTML = "<a href='instagram://tag?name=" + search + "'>" + result + "</a>";
 			}
 			else {
-				searchHTML = "<a href=" +  Constants.SERVER_NAME+ "/search/" + search + " >" + result + "</a>";
+				searchHTML = "<a href=" +  Constants.SERVER_NAME_T+ "/search/" + search + " >" + result + "</a>";
 
 			}
 			tweetText = tweetText.replace(result,searchHTML);
@@ -68,7 +68,7 @@ public class TwitterHelper {
 				userHTML = "<a href='instagram:/user?username" + rawName + "'>" + result + "</a>";
 			}
 			else {
-				userHTML = "<a href=" + Constants.SERVER_NAME + "/user/"+ rawName +">"  + result + "</a>";
+				userHTML = "<a href=" + Constants.SERVER_NAME_T + "/user/"+ rawName +">"  + result + "</a>";
 
 			}
 			

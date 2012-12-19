@@ -258,8 +258,8 @@ public class InstagramParser {
 		HashMap<String, Object> properties = new HashMap<String, Object>();
 		
 		
-		properties.put("descr_url", Constants.SERVER_NAME+"/instagram/"+id);
-		properties.put("icon_url", Constants.SERVER_NAME+"/assets/img/"+"instagram.png");
+		properties.put("descr_url", Constants.SERVER_NAME_T+"/instagram/"+id);
+		properties.put("icon_url", Constants.SERVER_NAME_T+"/assets/img/"+"instagram.png");
 
 		
 		properties.put("created_time", jsonNode.get("created_time").asLong());

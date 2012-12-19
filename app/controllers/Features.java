@@ -103,15 +103,15 @@ public class Features extends Controller {
 		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) {
 			FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
 			standard_resolution = saveImageFile(filePart.getFile(), filePart.getContentType());
-			properties.put("standard_resolution", Constants.SERVER_NAME+"/image/"+standard_resolution);
+			properties.put("standard_resolution", Constants.SERVER_NAME_T+"/image/"+standard_resolution);
 
 		}
 		
 		properties.put("source_type", "overlay");
 		
 		//HTML Content url for the Feature
-		properties.put("descr_url", Constants.SERVER_NAME+"/content/"+geoFeature.id);
-		properties.put("icon_url", Constants.SERVER_NAME+"/assets/img/"+"overlay.png");
+		properties.put("descr_url", Constants.SERVER_NAME_T+"/content/"+geoFeature.id);
+		properties.put("icon_url", Constants.SERVER_NAME_T+"/assets/img/"+"overlay.png");
 
 		
 		//add timestamp
@@ -225,7 +225,7 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 	//properties.put("low_resolution", "http://localhost:9000/image/"+low_resolution);
 	properties.put("source_type", "overlay");
 	//HTML Content url for the Feature
-	properties.put("descr_url", Constants.SERVER_NAME+"/content/"+geoFeature.id);
+	properties.put("descr_url", Constants.SERVER_NAME_T+"/content/"+geoFeature.id);
 	
 	//add timestamp
 	Date date = new Date();
