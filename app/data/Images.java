@@ -17,7 +17,7 @@ public class Images {
 	
 	public Images(String standard_resolution) {
 		
-		String url = Constants.SERVER_NAME+"/image/"+standard_resolution;
+		String url = Constants.SERVER_NAME_T+"/image/"+standard_resolution;
 		this.standard_resolution = new BasicImage(url, 612, 612);
 		this.low_resolution = new BasicImage();
 		this.thumbnail = new BasicImage();
