@@ -78,16 +78,25 @@ public class Contents extends Controller{
 			String description = TwitterHelper.parse(decString, "Instagram");
 			
 			String image = "";
+			User user = new User();
+			
 			if (feature.properties.get("standard_resolution") != null) {
 				image  = "<div id=\"image-holder\"> " +
 	                    "<img src="+feature.properties.get("standard_resolution").toString()+" alt=\"Smiley face\"  width=\"612\" height=\"612\" > " +
 	                    "</div> " ;
 			}
 			
-			Html content = new Html(image+description);
-			
-			
-			return ok(index.render(feature,content));
+			if (feature.properties.get("user") != null) {
+				
+				JsonNode userNode = toJson(feature.properties.get("user"));
+				user.id =userNode.get("id").asText();
+				user.full_name = userNode.get("full_name").asText();;
+				
+			}
+
+			Html content = new Html(image + description);
+
+			return ok(index.render(user, content));
 		} catch (Exception e) {
 			return ok("This POI does not exist anymore.");
 		}
