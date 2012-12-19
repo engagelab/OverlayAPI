@@ -342,24 +342,27 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 			//remove feature reference from individual hashtable
 			JsonNode tagsNode = toJson(feature.properties.get("tags"));
 			
-			
-			ObjectMapper mapper =  new ObjectMapper();
-			try {
-				Set<String> tags = mapper.readValue(tagsNode, new TypeReference<Set<String>>(){});
-				for (String hashTag : tags) {
-					HashTagTable htabel = HashTagTable.byTag(hashTag);
-					htabel.features.remove(feature);
+			if (!(tagsNode.isNull())) {
+				ObjectMapper mapper =  new ObjectMapper();
+				try {
+					Set<String> tags = mapper.readValue(tagsNode, new TypeReference<Set<String>>(){});
+					for (String hashTag : tags) {
+						HashTagTable htabel = HashTagTable.byTag(hashTag);
+						htabel.features.remove(feature);
+					}
+				} catch (JsonParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JsonMappingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			} catch (JsonParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (JsonMappingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+			
+			
 			
 			feature.delete();
 			return status(200, "OK");
@@ -367,6 +370,13 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 		
 		return status(403, "FORBIDDEN");
 	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
