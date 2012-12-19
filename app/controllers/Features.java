@@ -3,7 +3,9 @@ package controllers;
 import leodagdag.play2morphia.Blob;
 import leodagdag.play2morphia.MorphiaPlugin;
 import models.Feature;
+import models.HashTagTable;
 import models.Session;
+import models.User;
 import net.coobird.thumbnailator.Thumbnails;
 
 import external.Constants;
@@ -21,6 +23,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -321,7 +324,7 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 	
 	
 	
-	public static Result deleteAGeaoFeature(String id, String author_id) 
+	public static Result deleteGeoFeature(String id, String user_id) 
 	{
 		Feature feature = Feature.find().byId(id);
 		if(feature == null)
@@ -329,8 +332,37 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 			return status(404, "NOT_FOUND");
 		}
 		
-		String real_author_id = (String) feature.properties.get("author_id");
-		if (author_id == real_author_id) {
+		JsonNode userNode = toJson(feature.properties.get("user"));
+		String real_author_id = userNode.get("id").asText();
+		
+		if (user_id.equals(real_author_id)) {
+			
+			//remove feature reference from user
+			//User user = User.find().byId(user_id);
+			//user.features.remove(feature);
+			
+			//remove feature reference from individual hashtable
+			JsonNode tagsNode = toJson(feature.properties.get("tags"));
+			
+			
+			ObjectMapper mapper =  new ObjectMapper();
+			try {
+				Set<String> tags = mapper.readValue(tagsNode, new TypeReference<Set<String>>(){});
+				for (String hashTag : tags) {
+					HashTagTable htabel = HashTagTable.byTag(hashTag);
+					htabel.features.remove(feature);
+				}
+			} catch (JsonParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JsonMappingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			feature.delete();
 			return status(200, "OK");
 		}

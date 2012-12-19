@@ -8,7 +8,7 @@ GET    		 /                           	controllers.Application.index()
 # Geo Features
 POST			/geo						 controllers.Features.createGeoFeature()
 PUT				/geo						 controllers.Features.updateGeoFeature()
-DELETE			/geo						 controllers.Features.deleteAGeaoFeature(id:String, author_id:String)
+DELETE			/geo						 controllers.Features.deleteGeoFeature(id:String, user_id:String)
 GET				/geo						 controllers.Features.fetchAllGeoFeautres()
 GET				/search/:hashTag			 controllers.HashTagManager.fetchGeoFeaturesByTag(hashTag:String)
 GET				/user/:username				 controllers.Users.fetchGeoFeaturesByUser(username:String)
