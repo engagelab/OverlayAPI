@@ -342,7 +342,7 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 			//remove feature reference from individual hashtable
 			JsonNode tagsNode = toJson(feature.properties.get("tags"));
 			
-			if (!(tagsNode.isNull())) {
+			if (tagsNode != null) {
 				ObjectMapper mapper =  new ObjectMapper();
 				try {
 					Set<String> tags = mapper.readValue(tagsNode, new TypeReference<Set<String>>(){});
