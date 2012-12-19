@@ -348,13 +348,10 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 					Set<String> tags = mapper.readValue(tagsNode, new TypeReference<Set<String>>(){});
 					for (String hashTag : tags) {
 						//HashTagTable htabel = HashTagTable.byTag(hashTag);
-						HashTagTable htabel = HashTagTable.byTag(hashTag);
-//						List<Feature> features = htabel.features;
-//						features.remove(feature);
-//						
-//						htabel.features = features;
+						HashTagTable htabel = HashTagTable.byTag(hashTag);						
 						htabel.features.remove(feature);
 						htabel.update();
+						
 					}
 				} catch (JsonParseException e) {
 					// TODO Auto-generated catch block
