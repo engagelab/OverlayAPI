@@ -5,7 +5,6 @@ import leodagdag.play2morphia.MorphiaPlugin;
 import models.Feature;
 import models.HashTagTable;
 import models.Session;
-import models.User;
 import net.coobird.thumbnailator.Thumbnails;
 
 import external.Constants;
@@ -23,7 +22,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
