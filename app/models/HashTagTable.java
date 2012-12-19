@@ -25,7 +25,7 @@ public class HashTagTable extends Model {
 	
 	public String hashTag;
 	
-	@Reference
+	@Reference(ignoreMissing = true)
 	public List<Feature> features;
 	
 	public static Model.Finder<String, HashTagTable> find()

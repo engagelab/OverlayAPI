@@ -7,11 +7,11 @@
                 },
     "properties":
                 {
-            		"description": "it is #third POI from @fahied",
+            		"description": "it is #third #POI from @Martin",
                		"source_type": "Overly",
                		"user":{
-               					"id":"facebook id",
-               					"full_name":"facebook full name",
+               					"id":"808270471",
+               					"full_name":"Martin Havnør",
                					"location":[10.756731033325195,59.9238826969285]
                				}
                 }

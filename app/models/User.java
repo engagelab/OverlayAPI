@@ -25,7 +25,7 @@ public class User extends Model
 	
 	public String full_name;
 	
-	@Reference
+	@Reference(ignoreMissing = true)
 	public List<Feature> features;
 	
 	

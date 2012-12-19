@@ -139,10 +139,10 @@ public class Features extends Controller {
 		HashTagManager.saveFeatureRefInHashTable(tags, geoFeature);
 		
 		//Save Feature reference for perticular user
-		JsonNode user = node.findPath("user");
-		if (!(user.isNull())) {
-			Users.saveFeatureRefForUser(user.get("id").toString(), user.get("full_name").toString(),geoFeature);
-		}
+//		JsonNode user = node.findPath("user");
+//		if (!(user.isNull())) {
+//			Users.saveFeatureRefForUser(user.get("id").toString(), user.get("full_name").toString(),geoFeature);
+//		}
 		
 		return ok(toJson(geoFeature));
 	}
@@ -248,10 +248,10 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 	HashTagManager.saveFeatureRefInHashTable(tags, geoFeature);
 	
 	//Save Feature reference for perticular user
-	JsonNode user = node.findPath("user");
-	if (!(user.isNull())) {
-		Users.saveFeatureRefForUser(user.get("id").toString(), user.get("full_name").toString(),geoFeature);
-	}
+//	JsonNode user = node.findPath("user");
+//	if (!(user.isNull())) {
+//		Users.saveFeatureRefForUser(user.get("id").toString(), user.get("full_name").toString(),geoFeature);
+//	}
 	
 	return ok(toJson(geoFeature));
 	}
@@ -347,8 +347,14 @@ public static Result updateGeoFeature() throws JsonParseException, JsonMappingEx
 				try {
 					Set<String> tags = mapper.readValue(tagsNode, new TypeReference<Set<String>>(){});
 					for (String hashTag : tags) {
+						//HashTagTable htabel = HashTagTable.byTag(hashTag);
 						HashTagTable htabel = HashTagTable.byTag(hashTag);
+//						List<Feature> features = htabel.features;
+//						features.remove(feature);
+//						
+//						htabel.features = features;
 						htabel.features.remove(feature);
+						htabel.update();
 					}
 				} catch (JsonParseException e) {
 					// TODO Auto-generated catch block
