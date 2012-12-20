@@ -53,9 +53,7 @@ public class Features extends Controller {
 
 		// String low_resolution =
 		// convertToInstagramImage(filePart.getFile(),filePart.getContentType());
-		// String low_resolution =
-		// saveImageFile(convertToInstagramImage(filePart.getFile(),
-		// filePart.getContentType()),filePart.getContentType());
+		
 
 		FilePart jsonFilePart = ctx().request().body().asMultipartFormData()
 				.getFile("feature");
@@ -105,13 +103,17 @@ public class Features extends Controller {
 
 		String standard_resolution = "";
 		// Extract BasicImage from Multipart data
-		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) {
+		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) 
+		{
 			FilePart filePart = ctx().request().body().asMultipartFormData()
 					.getFile("picture");
 			standard_resolution = saveImageFile(filePart.getFile(),
 					filePart.getContentType());
 			properties.put("standard_resolution", Constants.SERVER_NAME_T
 					+ "/image/" + standard_resolution);
+			
+			 String thumbnail =convertToInstagramImage(filePart.getFile(),filePart.getContentType());
+			 properties.put("thumbnail", Constants.SERVER_NAME_T + "/image/" + thumbnail);
 
 		}
 
@@ -192,6 +194,7 @@ public class Features extends Controller {
 			String[] tokens = description.split(delims);
 			String name = tokens[0];
 			storedFeature.properties.put("name", name);
+			storedFeature.properties.put("description", description);
 
 			Set<String> tags = TwitterHelper.searchHashTags(description);
 			storedFeature.properties.put("tags", tags);
@@ -383,9 +386,11 @@ public class Features extends Controller {
 		int height = src.getHeight();
 		int width = src.getWidth();
 		BufferedImage dest = null;
-		if (height > width) {
+		if (height > width) 
+		{
 			dest = src.getSubimage(0, 0, width, width);
-		} else {
+		} else 
+		{
 			dest = src.getSubimage(0, 0, height, height);
 		}
 
