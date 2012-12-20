@@ -107,8 +107,8 @@ public class Features extends Controller {
 			properties.put("standard_resolution", Constants.SERVER_NAME_T
 					+ "/image/" + standard_resolution);
 			
-			 String thumbnail =convertToInstagramImage(filePart.getFile(),filePart.getContentType());
-			 properties.put("thumbnail", Constants.SERVER_NAME_T + "/image/" + thumbnail);
+//			 String thumbnail =convertToInstagramImage(filePart.getFile(),filePart.getContentType());
+//			 properties.put("thumbnail", Constants.SERVER_NAME_T + "/image/" + thumbnail);
 
 		}
 
@@ -219,8 +219,8 @@ public class Features extends Controller {
 					filePart.getContentType());
 			storedFeature.properties.put("standard_resolution", Constants.SERVER_NAME_T+ "/image/" + standard_resolution);
 			
-			String thumbnail =convertToInstagramImage(filePart.getFile(),filePart.getContentType());
-			storedFeature.properties.put("thumbnail", Constants.SERVER_NAME_T + "/image/" + thumbnail);
+//			String thumbnail =convertToInstagramImage(filePart.getFile(),filePart.getContentType());
+//			storedFeature.properties.put("thumbnail", Constants.SERVER_NAME_T + "/image/" + thumbnail);
 		}
 
 		storedFeature.properties.put("source_type", "overlay");
@@ -462,9 +462,9 @@ public class Features extends Controller {
 	public static String convertToInstagramImage(File file, String content_type)
 			throws IOException {
 		
-		Thumbnails.of(new File("/Users/spider/Desktop/Eve Myles Leather Jacket for 1920 x 1200 widescreen"))
-        .size(160, 160)
-        .toFile(new File("/Users/spider/Desktop/thumbnail.jpg"));
+//		Thumbnails.of(new File("/Users/spider/Desktop/Eve Myles Leather Jacket for 1920 x 1200 widescreen"))
+//        .size(160, 160)
+//        .toFile(new File("/Users/spider/Desktop/thumbnail.jpg"));
 
 		BufferedImage src = ImageIO.read(file);
 		int height = src.getHeight();
