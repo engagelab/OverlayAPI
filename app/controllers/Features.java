@@ -276,6 +276,9 @@ public class Features extends Controller {
 	
 	public static Result featureById(String id) {
 		Feature feature = Feature.find().byId(id);
+		if (feature == null) {
+			return ok("POI Not found");
+		}
 		return ok(toJson(feature));
 	}
 	
