@@ -7,6 +7,7 @@ import models.HashTagTable;
 import models.Session;
 import net.coobird.thumbnailator.Thumbnails;
 
+import helpers.Calculator;
 import external.Constants;
 import external.InstagramParser;
 import geometry.Geometry;
@@ -19,12 +20,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
+import javax.swing.Box;
+
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.JsonNode;
@@ -92,15 +96,6 @@ public class Features extends Controller {
 		Set<String> tags = TwitterHelper.searchHashTags(description);
 		properties.put("tags", tags);
 
-		// HashMap<String, Object> images = new HashMap<String, Object>(3);
-
-		// images.put("standard_resolution", new
-		// BasicImage(Constants.SERVER_NAME+"/image/"+standard_resolution));
-
-		// properties.put("images", images);
-
-		// properties.put("images", im);
-
 		String standard_resolution = "";
 		// Extract BasicImage from Multipart data
 		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) 
@@ -120,10 +115,8 @@ public class Features extends Controller {
 		properties.put("source_type", "overlay");
 
 		// HTML Content url for the Feature
-		properties.put("descr_url", Constants.SERVER_NAME_T + "/content/"
-				+ geoFeature.id);
-		properties.put("icon_url", Constants.SERVER_NAME_T + "/assets/img/"
-				+ "overlay.png");
+		properties.put("descr_url", Constants.SERVER_NAME_T + "/content/"+ geoFeature.id);
+		properties.put("icon_url", Constants.SERVER_NAME_T + "/assets/img/"+ "overlay.png");
 
 		// add timestamp
 		Date date = new Date();
@@ -158,6 +151,19 @@ public class Features extends Controller {
 		return ok(toJson(geoFeature));
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public static Result updateGeoFeature() throws JsonParseException,
 			JsonMappingException, IOException 
 	{
@@ -211,8 +217,10 @@ public class Features extends Controller {
 			//TODO: remove old picture from database
 			standard_resolution = saveImageFile(filePart.getFile(),
 					filePart.getContentType());
-			storedFeature.properties.put("standard_resolution", Constants.SERVER_NAME_T
-					+ "/image/" + standard_resolution);
+			storedFeature.properties.put("standard_resolution", Constants.SERVER_NAME_T+ "/image/" + standard_resolution);
+			
+			String thumbnail =convertToInstagramImage(filePart.getFile(),filePart.getContentType());
+			storedFeature.properties.put("thumbnail", Constants.SERVER_NAME_T + "/image/" + thumbnail);
 		}
 
 		storedFeature.properties.put("source_type", "overlay");
@@ -248,6 +256,13 @@ public class Features extends Controller {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
 	public static Result fetchAllGeoFeautres() {
 		List<Feature> featureslList = Feature.find().all();
 		FeatureCollection features = new FeatureCollection(featureslList);
@@ -263,6 +278,15 @@ public class Features extends Controller {
 		Feature feature = Feature.find().byId(id);
 		return ok(toJson(feature));
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	/*
 	 * To enble geoo spacial indexing
@@ -289,6 +313,63 @@ public class Features extends Controller {
 		return ok(toJson(collection));
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * This method is used to get the pois from a service and return a GeoJSON
+	 * document with the data retrieved given a longitude, latitude and a radius
+	 * in meters.
+	 * 
+	 * @param id
+	 *            The id of the service
+	 * @param lon
+	 *            The longitude
+	 * @param lat
+	 *            The latitude
+	 * @param distanceInMeters
+	 *            The distance in meters from the lon, lat
+	 * @return The GeoJSON response from the original service response
+	 */
+	public static Result getPOIsInRadius(String lng, String lat, String distanceInMeters)
+			 {
+
+		double[] bbox = Calculator.boundingCoordinates(
+				Double.parseDouble(lng), 
+				Double.parseDouble(lat),
+				Double.parseDouble(distanceInMeters));
+
+		List<Feature> features = Feature.find().disableValidation().field("geometry.coordinates")
+				.within(bbox[0], bbox[1], bbox[2], bbox[3]).asList();
+		List<Feature> instaPOIs = InstagramParser.searchInstaPOIsByBBox(bbox[0], bbox[1], bbox[2], bbox[3]);
+		
+		features.addAll(instaPOIs);
+
+		FeatureCollection collection = new FeatureCollection(features);
+
+		return ok(toJson(collection));
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public static Result deleteGeoFeature(String id, String user_id) {
 		Feature feature = Feature.find().byId(id);
 		if (feature == null) {
@@ -380,8 +461,11 @@ public class Features extends Controller {
 	// Instagram take only images with resolution 612 x 612
 	public static String convertToInstagramImage(File file, String content_type)
 			throws IOException {
-		// GridFSDBFile gfile = MorphiaPlugin.gridFs().findOne(new
-		// ObjectId(standard_resolution));
+		
+		Thumbnails.of(new File("/Users/spider/Desktop/Eve Myles Leather Jacket for 1920 x 1200 widescreen"))
+        .size(160, 160)
+        .toFile(new File("/Users/spider/Desktop/thumbnail.jpg"));
+
 		BufferedImage src = ImageIO.read(file);
 		int height = src.getHeight();
 		int width = src.getWidth();
