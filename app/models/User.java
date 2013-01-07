@@ -23,6 +23,7 @@ public class User extends Model
 	@Id
 	public String id;
 	
+	
 	public String full_name;
 	
 	@Reference(ignoreMissing = true)

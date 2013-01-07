@@ -20,15 +20,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
-import javax.swing.Box;
-
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.JsonNode;
@@ -269,6 +266,8 @@ public class Features extends Controller {
 		return ok(toJson(features));
 	}
 
+	
+	
 	
 	
 	
