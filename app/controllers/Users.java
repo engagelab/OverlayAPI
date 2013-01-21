@@ -19,9 +19,9 @@ public class Users extends Controller{
 
 	
 	
-	public static Result fetchGeoFeaturesByUser(String id)
+	public static Result fetchGeoFeaturesByUser(String userID)
 	{
-		User user = User.find().byId(id);
+		User user = User.find().byId(userID);
 		if (user == null) {
 			List<String> empty = new ArrayList<String>();
 			return ok(toJson(empty));
