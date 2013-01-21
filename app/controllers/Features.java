@@ -303,9 +303,10 @@ public class Features extends Controller {
 		Double lng22 = Double.valueOf(lng2);
 		Double lat22 = Double.valueOf(lat2);
 
+		//limite to nearest 18
 		List<Feature> features = Feature.find().disableValidation()
 				.field("geometry.coordinates")
-				.within(lng11, lat11, lng22, lat22).asList();
+				.within(lng11, lat11, lng22, lat22).limit(18).asList();
 		List<Feature> instaPOIs = InstagramParser.searchInstaPOIsByBBox(lng11,
 				lat11, lng22, lat22);
 		features.addAll(instaPOIs);
