@@ -5,7 +5,6 @@ import leodagdag.play2morphia.MorphiaPlugin;
 import models.Feature;
 import models.HashTagTable;
 import models.Session;
-import net.coobird.thumbnailator.Thumbnails;
 
 import helpers.Calculator;
 import external.Constants;
@@ -58,6 +57,7 @@ public class Features extends Controller {
 
 		FilePart jsonFilePart = ctx().request().body().asMultipartFormData()
 				.getFile("feature");
+		
 		// Convert json file to JsonNode
 		ObjectMapper mapperj = new ObjectMapper();
 		BufferedReader fileReader = new BufferedReader(new FileReader(
@@ -93,7 +93,14 @@ public class Features extends Controller {
 		Set<String> tags = TwitterHelper.searchHashTags(description);
 		properties.put("tags", tags);
 
+		
 		String standard_resolution = "";
+		
+		//TODO: make a method to save different sizes of the picture
+		// public static savePictureInDifferentSizes (FilePart picture){}
+		
+		
+		
 		// Extract BasicImage from Multipart data
 		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) 
 		{
@@ -289,6 +296,31 @@ public class Features extends Controller {
 	
 	
 	
+	public static Result geoMostRecentFeatures()
+	{
+
+
+		//limite to nearest 18
+		List<Feature> features = Feature.find().order("-properties.created_time").limit(18).asList();
+	//	List<Feature> instaPOIs = InstagramParser.searchInstaPOIsByBBox(lng11,
+//				lat11, lng22, lat22);
+//		features.addAll(instaPOIs);
+
+		FeatureCollection collection = new FeatureCollection(features);
+
+		return ok(toJson(collection));
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	/*
 	 * To enble geoo spacial indexing
@@ -304,7 +336,7 @@ public class Features extends Controller {
 		Double lat22 = Double.valueOf(lat2);
 
 		//limite to nearest 18
-		List<Feature> features = Feature.find().disableValidation()
+		List<Feature> features = Feature.find().disableValidation().order("-properties.created_time")
 				.field("geometry.coordinates")
 				.within(lng11, lat11, lng22, lat22).limit(18).asList();
 		List<Feature> instaPOIs = InstagramParser.searchInstaPOIsByBBox(lng11,
@@ -347,7 +379,8 @@ public class Features extends Controller {
 				Double.parseDouble(lat),
 				Double.parseDouble(distanceInMeters));
 
-		List<Feature> features = Feature.find().disableValidation().field("geometry.coordinates")
+		List<Feature> features = Feature.find().disableValidation().order("-properties.created_time").
+				field("geometry.coordinates")
 				.within(bbox[0], bbox[1], bbox[2], bbox[3]).asList();
 		List<Feature> instaPOIs = InstagramParser.searchInstaPOIsByBBox(bbox[0], bbox[1], bbox[2], bbox[3]);
 		
@@ -462,43 +495,43 @@ public class Features extends Controller {
 	}
 
 	// Instagram take only images with resolution 612 x 612
-	public static String convertToInstagramImage(File file, String content_type)
-			throws IOException {
-		
-//		Thumbnails.of(new File("/Users/spider/Desktop/Eve Myles Leather Jacket for 1920 x 1200 widescreen"))
-//        .size(160, 160)
-//        .toFile(new File("/Users/spider/Desktop/thumbnail.jpg"));
-
-		BufferedImage src = ImageIO.read(file);
-		int height = src.getHeight();
-		int width = src.getWidth();
-		BufferedImage dest = null;
-		if (height > width) 
-		{
-			dest = src.getSubimage(0, 0, width, width);
-		} else 
-		{
-			dest = src.getSubimage(0, 0, height, height);
-		}
-
-		BufferedImage os = null;
-
-		try {
-			os = Thumbnails.of(dest).size(612, 612).asBufferedImage();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// File file = instagramBufferedImage.;
-		ImageIO.write(os, content_type, file);
-
-		Blob imageBlob = new Blob(file, content_type);
-		GridFSFile image = imageBlob.getGridFSFile();
-		image.save();
-		return image.getId().toString();
-
-	}
+//	public static String convertToInstagramImage(File file, String content_type)
+//			throws IOException {
+//		
+////		Thumbnails.of(new File("/Users/spider/Desktop/Eve Myles Leather Jacket for 1920 x 1200 widescreen"))
+////        .size(160, 160)
+////        .toFile(new File("/Users/spider/Desktop/thumbnail.jpg"));
+//
+//		BufferedImage src = ImageIO.read(file);
+//		int height = src.getHeight();
+//		int width = src.getWidth();
+//		BufferedImage dest = null;
+//		if (height > width) 
+//		{
+//			dest = src.getSubimage(0, 0, width, width);
+//		} else 
+//		{
+//			dest = src.getSubimage(0, 0, height, height);
+//		}
+//
+//		BufferedImage os = null;
+//
+//		try {
+//			os = Thumbnails.of(dest).size(612, 612).asBufferedImage();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		// File file = instagramBufferedImage.;
+//		ImageIO.write(os, content_type, file);
+//
+//		Blob imageBlob = new Blob(file, content_type);
+//		GridFSFile image = imageBlob.getGridFSFile();
+//		image.save();
+//		return image.getId().toString();
+//
+//	}
 
 	/*
 	 * HTTP STatus Codes public static final int OK = 200; public static final

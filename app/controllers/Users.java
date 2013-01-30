@@ -49,6 +49,4 @@ public class Users extends Controller{
 	}
 	
 	
-	
-	
 }

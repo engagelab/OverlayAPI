@@ -17,6 +17,7 @@ GET				/geo/:id					 controllers.Features.featureById(id:String)
 
 GET				/geo/box/					 controllers.Features.geoFeaturesInBoundingBox(lng1:String, lat1:String, lng2:String, lat2:String)
 GET				/geo/radius/:lng/:lat/:distanceInMeters				 controllers.Features.getPOIsInRadius(lng:String, lat:String, distanceInMeters:String)
+GET				/geo/recent/				controllers.Features.geoMostRecentFeatures()
 
 
 # Geo Content
