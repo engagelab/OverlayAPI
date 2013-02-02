@@ -296,16 +296,22 @@ public class Features extends Controller {
 	
 	
 	
-	public static Result geoMostRecentFeatures()
+	public static Result geoMostRecentFeatures(String lng, String lat)
 	{
 
-
+		Double lngD = Double.valueOf(lng);
+		Double latD = Double.valueOf(lat);
 		//limite to nearest 18
-		List<Feature> features = Feature.find().order("-properties.created_time").limit(18).asList();
-	//	List<Feature> instaPOIs = InstagramParser.searchInstaPOIsByBBox(lng11,
-//				lat11, lng22, lat22);
-//		features.addAll(instaPOIs);
-
+		List<Feature> features = Feature.find().order("-properties.created_time").limit(10).asList();
+		List<Feature> instaPOIs;
+		try {
+			instaPOIs = InstagramParser.searchRecentInstaFeatures(lngD, latD);
+			features.addAll(instaPOIs);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		FeatureCollection collection = new FeatureCollection(features);
 
 		return ok(toJson(collection));

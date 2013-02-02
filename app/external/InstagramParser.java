@@ -62,7 +62,41 @@ public class InstagramParser {
 	
 	
 	
+	public static List<Feature> searchRecentInstaFeatures(double lng, double lat) throws Exception
+	{
+		long unixTime = System.currentTimeMillis() / 1000L;
+		
+		String url = "https://api.instagram.com/v1/media/search?max_timestamp="+unixTime+"&client_id=a80dd450be84452a91527609a4eae97b"
+				+"&lat="+lat+"&lng="+lng;
+		
+		/*
+
+				HashMap<String, String> params = new HashMap<String, String>();
+		params.put(Param.LAT, String.valueOf(center[0]));
+		params.put(Param.LNG, String.valueOf(center[1]));
+		params.put(Param.DIST, String.valueOf(radius_outer_circle_of_reactangle));
+		params.put(Param.CLIENTID, "a80dd450be84452a91527609a4eae97b");
+		 * */
+		
+		String file = isRequestSuccessful(url);
+		if (file != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode actualObj = mapper.readTree(file);
+			if (actualObj.findPath("meta").get("code").toString()
+					.equalsIgnoreCase("200")) 
+			{
+				List<Feature> geoJSON = onResponseReceived(actualObj);
+				return geoJSON;
+
+			} else {
+				return new ArrayList<Feature>();
+			}
+			
+		}
 	
+		return new ArrayList<Feature>();
+
+	}
 	
 	
 	
@@ -217,6 +251,11 @@ public class InstagramParser {
 	}
 	
 	
+	
+	
+	
+	
+
 	
 	
 	
