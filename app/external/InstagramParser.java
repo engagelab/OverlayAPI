@@ -66,7 +66,9 @@ public class InstagramParser {
 	{
 		long unixTime = System.currentTimeMillis() / 1000L;
 		
-		String url = "https://api.instagram.com/v1/media/search?max_timestamp="+unixTime+"&client_id=a80dd450be84452a91527609a4eae97b"
+		String url = "https://api.instagram.com/v1/media/search?" +
+				//"max_timestamp="+unixTime+
+				"client_id=a80dd450be84452a91527609a4eae97b"
 				+"&lat="+lat+"&lng="+lng;
 		
 		/*
