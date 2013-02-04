@@ -67,7 +67,7 @@ public class InstagramParser {
 		long unixTime = System.currentTimeMillis() / 1000L;
 		
 		String url = "https://api.instagram.com/v1/media/search?" +
-				//"max_timestamp="+unixTime+
+				"max_timestamp="+unixTime +"&"+
 				"client_id=a80dd450be84452a91527609a4eae97b"
 				+"&lat="+lat+"&lng="+lng;
 		
@@ -102,6 +102,60 @@ public class InstagramParser {
 	
 	
 	
+	
+	
+	
+	public static List<Feature> searchInstaByRadius(double lng1, double lat1,double radius) 
+	{
+		String describeService = "https://api.instagram.com/v1/media/search";
+
+		String url;
+		//String file;
+
+		try {
+			url = buildRequestByRadius(describeService, lng1, lat1, radius);
+
+			try {
+					String file = isRequestSuccessful(url);
+				if (file != null) {
+					ObjectMapper mapper = new ObjectMapper();
+					JsonNode actualObj;
+					try {
+						actualObj = mapper.readTree(file);
+						if (actualObj.findPath("meta").get("code").toString()
+								.equalsIgnoreCase("200")) {
+							List<Feature> geoJSON = onResponseReceived(actualObj);
+							return geoJSON;
+
+						} else {
+							return new ArrayList<Feature>();
+						}
+
+					} catch (JsonProcessingException e) {
+						//
+						e.printStackTrace();
+					} catch (IOException e) {
+						//  Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+
+
+			} catch (Exception e) {
+				//  Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (UnsupportedEncodingException e) {
+			//  Auto-generated catch block
+			e.printStackTrace();
+			
+		}
+
+		return new ArrayList<Feature>();
+	}
+		
 	
 	
 	
@@ -416,6 +470,47 @@ public class InstagramParser {
 	}
 	
 	
+	
+	
+	public static String buildRequestByRadius(String describeService, double lng,
+			double lat, double radius) throws UnsupportedEncodingException 
+	{
+		
+		
+		
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put(Param.LAT, String.valueOf(lat));
+		params.put(Param.LNG, String.valueOf(lng));
+		params.put(Param.DIST, String.valueOf(radius));
+		params.put(Param.CLIENTID, "a80dd450be84452a91527609a4eae97b");
+
+		
+		// construct URL
+		StringBuffer paramsBuffer = new StringBuffer();
+		if (params.keySet().size() > 0) {
+			boolean isFirstParam = true;
+			for (Iterator<String> keys = params.keySet().iterator(); keys.hasNext();) {
+				String key = (String) keys.next();
+				if (isFirstParam) {
+					paramsBuffer.append("?" + key);
+					isFirstParam = false;
+				} else {
+					paramsBuffer.append("&" + key);
+				}
+				paramsBuffer.append("="
+						+ URLEncoder.encode(
+								(String) params.get(key),
+								"UTF-8"));
+			}
+		}
+		
+		StringBuffer url =   new StringBuffer();
+		url.append(describeService);
+		url.append(paramsBuffer);
+		
+		
+		return url.toString();
+	}
 	
 	
 	

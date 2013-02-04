@@ -380,15 +380,15 @@ public class Features extends Controller {
 	public static Result getPOIsInRadius(String lng, String lat, String distanceInMeters)
 			 {
 
-		double[] bbox = Calculator.boundingCoordinates(
-				Double.parseDouble(lng), 
-				Double.parseDouble(lat),
-				Double.parseDouble(distanceInMeters));
+				double lngD = Double.parseDouble(lng);
+				double latD = Double.parseDouble(lat);
+				double radiusD = Double.parseDouble(distanceInMeters);
 
-		List<Feature> features = Feature.find().disableValidation().order("-properties.created_time").
+		List<Feature> features = Feature.find().disableValidation().
 				field("geometry.coordinates")
-				.within(bbox[0], bbox[1], bbox[2], bbox[3]).asList();
-		List<Feature> instaPOIs = InstagramParser.searchInstaPOIsByBBox(bbox[0], bbox[1], bbox[2], bbox[3]);
+				.near(lngD, latD).limit(10).asList();
+		
+		List<Feature> instaPOIs = InstagramParser.searchInstaByRadius(lngD, latD, radiusD);
 		
 		features.addAll(instaPOIs);
 
