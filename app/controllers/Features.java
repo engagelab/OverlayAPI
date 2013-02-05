@@ -107,9 +107,12 @@ public class Features extends Controller {
 		// Extract BasicImage from Multipart data
 		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) {
 			FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
+			
+			//saves the full-size image
 			high_resolution = saveImageFile(filePart.getFile(), filePart.getContentType());
 			properties.put("high_resolution", Constants.SERVER_NAME_T + "/image/" + high_resolution);
 			
+			//saves the 150px width image
 			image = ImageIO.read(filePart.getFile());
 			image = Scalr.resize(image, 150);
 			tmpFile = new File("tmpPic");
@@ -118,6 +121,7 @@ public class Features extends Controller {
 			thumb_resolution = saveImageFile(tmpFile, filePart.getContentType());
 			properties.put("thumb_resolution", Constants.SERVER_NAME_T + "/image/" + thumb_resolution);
 			
+			//saves the 612px width image
 			image = ImageIO.read(filePart.getFile());
 			image = Scalr.resize(image, 612);
 			tmpFile = new File("tmpPic");
