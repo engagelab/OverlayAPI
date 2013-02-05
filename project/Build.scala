@@ -18,7 +18,10 @@ object ApplicationBuild extends Build {
     	"net.coobird" % "thumbnailator" % "0.4.2",
     	
     	// Twittter Bootstrap
-    	"com.github.twitter" % "bootstrap" % "2.0.2"
+    	"com.github.twitter" % "bootstrap" % "2.0.2",
+    	
+    	//ImageScaler
+    	"org.imgscalr" % "imgscalr-lib" % "4.2"
     
     )
 

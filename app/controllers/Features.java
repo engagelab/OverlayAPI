@@ -1,12 +1,6 @@
 package controllers;
 
-import leodagdag.play2morphia.Blob;
-import leodagdag.play2morphia.MorphiaPlugin;
-import models.Feature;
-import models.HashTagTable;
-import models.Session;
-
-import helpers.Calculator;
+import static play.libs.Json.toJson;
 import external.Constants;
 import external.InstagramParser;
 import geometry.Geometry;
@@ -25,6 +19,13 @@ import java.util.List;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
+
+import leodagdag.play2morphia.Blob;
+import leodagdag.play2morphia.MorphiaPlugin;
+import models.Feature;
+import models.HashTagTable;
+import models.Session;
+
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.JsonNode;
@@ -32,15 +33,16 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.imgscalr.Scalr;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.gridfs.GridFSDBFile;
-import com.mongodb.gridfs.GridFSFile;
 import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
 import play.mvc.Results;
-import static play.libs.Json.toJson;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.gridfs.GridFSDBFile;
+import com.mongodb.gridfs.GridFSFile;
 
 /**
  * @author Muhammad Fahied
@@ -53,11 +55,10 @@ public class Features extends Controller {
 
 		// String low_resolution =
 		// convertToInstagramImage(filePart.getFile(),filePart.getContentType());
-		
 
 		FilePart jsonFilePart = ctx().request().body().asMultipartFormData()
 				.getFile("feature");
-		
+
 		// Convert json file to JsonNode
 		ObjectMapper mapperj = new ObjectMapper();
 		BufferedReader fileReader = new BufferedReader(new FileReader(
@@ -93,34 +94,53 @@ public class Features extends Controller {
 		Set<String> tags = TwitterHelper.searchHashTags(description);
 		properties.put("tags", tags);
 
-		
+		String high_resolution = "";
 		String standard_resolution = "";
+		String thumb_resolution = "";
 		
-		//TODO: make a method to save different sizes of the picture
+		BufferedImage image;
+		File tmpFile;
+
+		// TODO: make a method to save different sizes of the picture
 		// public static savePictureInDifferentSizes (FilePart picture){}
-		
-		
-		
+
 		// Extract BasicImage from Multipart data
-		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) 
-		{
-			FilePart filePart = ctx().request().body().asMultipartFormData()
-					.getFile("picture");
-			standard_resolution = saveImageFile(filePart.getFile(),
-					filePart.getContentType());
-			properties.put("standard_resolution", Constants.SERVER_NAME_T
-					+ "/image/" + standard_resolution);
+		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) {
+			FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
+			high_resolution = saveImageFile(filePart.getFile(), filePart.getContentType());
+			properties.put("high_resolution", Constants.SERVER_NAME_T + "/image/" + high_resolution);
 			
-//			 String thumbnail =convertToInstagramImage(filePart.getFile(),filePart.getContentType());
-//			 properties.put("thumbnail", Constants.SERVER_NAME_T + "/image/" + thumbnail);
+			image = ImageIO.read(filePart.getFile());
+			image = Scalr.resize(image, 150);
+			tmpFile = new File("tmpPic");
+			ImageIO.write(image, "jpg", tmpFile);
+			
+			thumb_resolution = saveImageFile(tmpFile, filePart.getContentType());
+			properties.put("thumb_resolution", Constants.SERVER_NAME_T + "/image/" + thumb_resolution);
+			
+			image = ImageIO.read(filePart.getFile());
+			image = Scalr.resize(image, 612);
+			tmpFile = new File("tmpPic");
+			ImageIO.write(image, "jpg", tmpFile);
+			
+			standard_resolution = saveImageFile(tmpFile, filePart.getContentType());
+			properties.put("standard_resolution", Constants.SERVER_NAME_T + "/image/" + standard_resolution);
+			
+			
+			// String thumbnail
+			// =convertToInstagramImage(filePart.getFile(),filePart.getContentType());
+			// properties.put("thumbnail", Constants.SERVER_NAME_T + "/image/" +
+			// thumbnail);
 
 		}
 
 		properties.put("source_type", "overlay");
 
 		// HTML Content url for the Feature
-		properties.put("descr_url", Constants.SERVER_NAME_T + "/content/"+ geoFeature.id);
-		properties.put("icon_url", Constants.SERVER_NAME_T + "/assets/img/"+ "overlay.png");
+		properties.put("descr_url", Constants.SERVER_NAME_T + "/content/"
+				+ geoFeature.id);
+		properties.put("icon_url", Constants.SERVER_NAME_T + "/assets/img/"
+				+ "overlay.png");
 
 		// add timestamp
 		Date date = new Date();
@@ -155,51 +175,42 @@ public class Features extends Controller {
 		return ok(toJson(geoFeature));
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	public static Result updateGeoFeature() throws JsonParseException,
-			JsonMappingException, IOException 
-	{
-		FilePart jsonFilePart = ctx().request().body().asMultipartFormData().getFile("feature");
+			JsonMappingException, IOException {
+		FilePart jsonFilePart = ctx().request().body().asMultipartFormData()
+				.getFile("feature");
 		// Convert json file to JsonNode
 		ObjectMapper mapperj = new ObjectMapper();
-		BufferedReader fileReader = new BufferedReader(new FileReader(jsonFilePart.getFile()));
+		BufferedReader fileReader = new BufferedReader(new FileReader(
+				jsonFilePart.getFile()));
 
 		JsonNode node = mapperj.readTree(fileReader);
 		ObjectMapper mapper = new ObjectMapper();
 
-
 		String storedFeature_id = node.get("id").asText();
 		Feature storedFeature = Feature.find().byId(storedFeature_id);
-		
-		
-		JsonNode coordinatesNode = node.findPath("coordinates");
-		TypeReference<Double[]> collectionTypeD = new TypeReference<Double[]>() {};
-		Double[] coordinates = mapper.readValue(coordinatesNode,collectionTypeD);
-		Geometry geometry = new Point(coordinates[0], coordinates[1]);
-		storedFeature.geometry=geometry;
 
-		
+		JsonNode coordinatesNode = node.findPath("coordinates");
+		TypeReference<Double[]> collectionTypeD = new TypeReference<Double[]>() {
+		};
+		Double[] coordinates = mapper.readValue(coordinatesNode,
+				collectionTypeD);
+		Geometry geometry = new Point(coordinates[0], coordinates[1]);
+		storedFeature.geometry = geometry;
+
 		JsonNode propertiesNode = node.get("properties");
-		TypeReference<HashMap<String, Object>> collectionType = new TypeReference<HashMap<String, Object>>() {};
-		HashMap<String, Object> properties = mapper.readValue(propertiesNode, collectionType);
+		TypeReference<HashMap<String, Object>> collectionType = new TypeReference<HashMap<String, Object>>() {
+		};
+		HashMap<String, Object> properties = mapper.readValue(propertiesNode,
+				collectionType);
 
 		String description = (String) properties.get("description");
-		String oldDescription = (String) storedFeature.properties.get("description");
+		String oldDescription = (String) storedFeature.properties
+				.get("description");
 		if (!(description.equals(oldDescription))) {
-			
-			// Formulate the label of the POI, using first sentence in the description
+
+			// Formulate the label of the POI, using first sentence in the
+			// description
 			String delims = "[.,?!]+";
 			String[] tokens = description.split(delims);
 			String name = tokens[0];
@@ -208,29 +219,34 @@ public class Features extends Controller {
 
 			Set<String> tags = TwitterHelper.searchHashTags(description);
 			storedFeature.properties.put("tags", tags);
-			
+
 			// Save feature reference to individual tags
 			HashTagManager.saveFeatureRefInHashTable(tags, storedFeature);
-			
+
 		}
-		
+
 		String standard_resolution = "";
 		// Extract BasicImage from Multipart data
 		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) {
-			FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
-			//TODO: remove old picture from database
+			FilePart filePart = ctx().request().body().asMultipartFormData()
+					.getFile("picture");
+			// TODO: remove old picture from database
 			standard_resolution = saveImageFile(filePart.getFile(),
 					filePart.getContentType());
-			storedFeature.properties.put("standard_resolution", Constants.SERVER_NAME_T+ "/image/" + standard_resolution);
-			
-//			String thumbnail =convertToInstagramImage(filePart.getFile(),filePart.getContentType());
-//			storedFeature.properties.put("thumbnail", Constants.SERVER_NAME_T + "/image/" + thumbnail);
+			storedFeature.properties.put("standard_resolution",
+					Constants.SERVER_NAME_T + "/image/" + standard_resolution);
+
+			// String thumbnail
+			// =convertToInstagramImage(filePart.getFile(),filePart.getContentType());
+			// storedFeature.properties.put("thumbnail", Constants.SERVER_NAME_T
+			// + "/image/" + thumbnail);
 		}
 
 		storedFeature.properties.put("source_type", "overlay");
 
 		// HTML Content url for the Feature
-		storedFeature.properties.put("icon_url", Constants.SERVER_NAME_T + "/assets/img/"+ "overlay.png");
+		storedFeature.properties.put("icon_url", Constants.SERVER_NAME_T
+				+ "/assets/img/" + "overlay.png");
 
 		// add timestamp
 		Date date = new Date();
@@ -249,37 +265,15 @@ public class Features extends Controller {
 
 		}
 
-
 		return ok(toJson(storedFeature));
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	public static Result fetchAllGeoFeautres() {
 		List<Feature> featureslList = Feature.find().all();
 		FeatureCollection features = new FeatureCollection(featureslList);
 		return ok(toJson(features));
 	}
 
-	
-	
-	
-	
-	
-	
-	
 	public static Result featureById(String id) {
 		Feature feature = Feature.find().byId(id);
 		if (feature == null) {
@@ -287,22 +281,14 @@ public class Features extends Controller {
 		}
 		return ok(toJson(feature));
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public static Result geoMostRecentFeatures(String lng, String lat)
-	{
+
+	public static Result geoMostRecentFeatures(String lng, String lat) {
 
 		Double lngD = Double.valueOf(lng);
 		Double latD = Double.valueOf(lat);
-		//limite to nearest 18
-		List<Feature> features = Feature.find().order("-properties.created_time").limit(10).asList();
+		// limite to nearest 18
+		List<Feature> features = Feature.find()
+				.order("-properties.created_time").limit(10).asList();
 		List<Feature> instaPOIs;
 		try {
 			instaPOIs = InstagramParser.searchRecentInstaFeatures(lngD, latD);
@@ -311,22 +297,11 @@ public class Features extends Controller {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		FeatureCollection collection = new FeatureCollection(features);
 
 		return ok(toJson(collection));
 	}
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 	/*
 	 * To enble geoo spacial indexing
@@ -341,8 +316,9 @@ public class Features extends Controller {
 		Double lng22 = Double.valueOf(lng2);
 		Double lat22 = Double.valueOf(lat2);
 
-		//limite to nearest 18
-		List<Feature> features = Feature.find().disableValidation().order("-properties.created_time")
+		// limite to nearest 18
+		List<Feature> features = Feature.find().disableValidation()
+				.order("-properties.created_time")
 				.field("geometry.coordinates")
 				.within(lng11, lat11, lng22, lat22).limit(18).asList();
 		List<Feature> instaPOIs = InstagramParser.searchInstaPOIsByBBox(lng11,
@@ -354,14 +330,6 @@ public class Features extends Controller {
 		return ok(toJson(collection));
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
 	/**
 	 * This method is used to get the pois from a service and return a GeoJSON
 	 * document with the data retrieved given a longitude, latitude and a radius
@@ -377,41 +345,27 @@ public class Features extends Controller {
 	 *            The distance in meters from the lon, lat
 	 * @return The GeoJSON response from the original service response
 	 */
-	public static Result getPOIsInRadius(String lng, String lat, String distanceInMeters)
-			 {
+	public static Result getPOIsInRadius(String lng, String lat,
+			String distanceInMeters) {
 
-				double lngD = Double.parseDouble(lng);
-				double latD = Double.parseDouble(lat);
-				double radiusD = Double.parseDouble(distanceInMeters);
+		double lngD = Double.parseDouble(lng);
+		double latD = Double.parseDouble(lat);
+		double radiusD = Double.parseDouble(distanceInMeters);
 
-		List<Feature> features = Feature.find().disableValidation().
-				field("geometry.coordinates")
-				.near(lngD, latD).limit(10).asList();
-		
-		List<Feature> instaPOIs = InstagramParser.searchInstaByRadius(lngD, latD, radiusD);
-		
+		List<Feature> features = Feature.find().disableValidation()
+				.field("geometry.coordinates").near(lngD, latD).limit(10)
+				.asList();
+
+		List<Feature> instaPOIs = InstagramParser.searchInstaByRadius(lngD,
+				latD, radiusD);
+
 		features.addAll(instaPOIs);
 
 		FeatureCollection collection = new FeatureCollection(features);
 
 		return ok(toJson(collection));
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	public static Result deleteGeoFeature(String id, String user_id) {
 		Feature feature = Feature.find().byId(id);
 		if (feature == null) {
@@ -475,8 +429,9 @@ public class Features extends Controller {
 
 	public static String saveImageFile(File file, String content_type) {
 
-		if (file == null)
-			return "";
+		if (file == null) {
+			return "";			
+		}
 
 		Blob imageBlob = new Blob(file, content_type);
 		GridFSFile image = imageBlob.getGridFSFile();
@@ -501,43 +456,45 @@ public class Features extends Controller {
 	}
 
 	// Instagram take only images with resolution 612 x 612
-//	public static String convertToInstagramImage(File file, String content_type)
-//			throws IOException {
-//		
-////		Thumbnails.of(new File("/Users/spider/Desktop/Eve Myles Leather Jacket for 1920 x 1200 widescreen"))
-////        .size(160, 160)
-////        .toFile(new File("/Users/spider/Desktop/thumbnail.jpg"));
-//
-//		BufferedImage src = ImageIO.read(file);
-//		int height = src.getHeight();
-//		int width = src.getWidth();
-//		BufferedImage dest = null;
-//		if (height > width) 
-//		{
-//			dest = src.getSubimage(0, 0, width, width);
-//		} else 
-//		{
-//			dest = src.getSubimage(0, 0, height, height);
-//		}
-//
-//		BufferedImage os = null;
-//
-//		try {
-//			os = Thumbnails.of(dest).size(612, 612).asBufferedImage();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		// File file = instagramBufferedImage.;
-//		ImageIO.write(os, content_type, file);
-//
-//		Blob imageBlob = new Blob(file, content_type);
-//		GridFSFile image = imageBlob.getGridFSFile();
-//		image.save();
-//		return image.getId().toString();
-//
-//	}
+	// public static String convertToInstagramImage(File file, String
+	// content_type)
+	// throws IOException {
+	//
+	// // Thumbnails.of(new
+	// File("/Users/spider/Desktop/Eve Myles Leather Jacket for 1920 x 1200 widescreen"))
+	// // .size(160, 160)
+	// // .toFile(new File("/Users/spider/Desktop/thumbnail.jpg"));
+	//
+	// BufferedImage src = ImageIO.read(file);
+	// int height = src.getHeight();
+	// int width = src.getWidth();
+	// BufferedImage dest = null;
+	// if (height > width)
+	// {
+	// dest = src.getSubimage(0, 0, width, width);
+	// } else
+	// {
+	// dest = src.getSubimage(0, 0, height, height);
+	// }
+	//
+	// BufferedImage os = null;
+	//
+	// try {
+	// os = Thumbnails.of(dest).size(612, 612).asBufferedImage();
+	// } catch (IOException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	//
+	// // File file = instagramBufferedImage.;
+	// ImageIO.write(os, content_type, file);
+	//
+	// Blob imageBlob = new Blob(file, content_type);
+	// GridFSFile image = imageBlob.getGridFSFile();
+	// image.save();
+	// return image.getId().toString();
+	//
+	// }
 
 	/*
 	 * HTTP STatus Codes public static final int OK = 200; public static final
