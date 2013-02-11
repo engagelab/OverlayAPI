@@ -159,7 +159,6 @@ public class Features extends Controller {
 			properties = storeImageIn3Sizes(properties,filePart);
 		}
 		
-		
 
 		geoFeature.setProperties(properties);
 
@@ -524,7 +523,7 @@ public class Features extends Controller {
 		// limite to nearest 18
 		List<Feature> features = Feature.find().disableValidation()
 				.field("geometry.coordinates")
-				.within(lat11, lng11, lat22, lng22).limit(18).asList();
+				.within(lng11,lat11, lng22, lat22).limit(18).asList();
 		List<Feature> instaPOIs = InstagramParser.searchInstaPOIsByBBox(lng11,
 				lat11, lng22, lat22);
 		features.addAll(instaPOIs);

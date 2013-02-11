@@ -14,12 +14,7 @@
                					"full_name":"Martin Havnør",
                					"location":[10.756731033325195,59.9238826969285]
                				},
-               		"description": "Oslo is #White in #Winter",
-               		"mapper":{
-               					"id":"808270471",
-               					"full_name":"Martin Havnør",
-               					"location":[10.756731033325195,59.9238826969285]
-               				},
-               	 	"mapper_description": "I can also see the #One #Two"
+               		"description": "Oslo is #White in #Winter"
+               		
                 }
 }
