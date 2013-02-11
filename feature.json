@@ -8,7 +8,7 @@
                 },
     "properties":
                 {
-               		"source_type": "mapped_instagram",
+               		"source_type": "overlay",
                		"user":{
                					"id":"808270471",
                					"full_name":"Martin Havnør",
