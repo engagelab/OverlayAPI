@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -49,6 +50,8 @@ import com.mongodb.gridfs.GridFSFile;
  */
 
 public class Features extends Controller {
+	
+	private static ObjectMapper mapper = new ObjectMapper();
 
 	public static Result createGeoFeature() throws JsonParseException,
 			JsonMappingException, IOException {
@@ -56,128 +59,203 @@ public class Features extends Controller {
 		// String low_resolution =
 		// convertToInstagramImage(filePart.getFile(),filePart.getContentType());
 
-		FilePart jsonFilePart = ctx().request().body().asMultipartFormData()
-				.getFile("feature");
-
-		// Convert json file to JsonNode
-		ObjectMapper mapperj = new ObjectMapper();
-		BufferedReader fileReader = new BufferedReader(new FileReader(
-				jsonFilePart.getFile()));
-
-		JsonNode node = mapperj.readTree(fileReader);
-		ObjectMapper mapper = new ObjectMapper();
-
-		JsonNode coordinatesNode = node.findPath("coordinates");
-		TypeReference<Double[]> collectionTypeD = new TypeReference<Double[]>() {
-		};
-		Double[] coordinates = mapper.readValue(coordinatesNode,
-				collectionTypeD);
-		Geometry geometry = new Point(coordinates[0], coordinates[1]);
-
+		FilePart jsonFilePart = ctx().request().body().asMultipartFormData().getFile("feature");
+		BufferedReader fileReader = new BufferedReader(new FileReader(jsonFilePart.getFile()));
+		JsonNode featureNode = mapper.readTree(fileReader);
+		
+		//find the type of geometry
+		Geometry geometry = geometryOfFeature(featureNode);
+		//create new feature object for geometry
 		Feature geoFeature = new Feature(geometry);
 
-		JsonNode propertiesNode = node.get("properties");
-		TypeReference<HashMap<String, Object>> collectionType = new TypeReference<HashMap<String, Object>>() {
-		};
-		HashMap<String, Object> properties = mapper.readValue(propertiesNode,
-				collectionType);
-
+		JsonNode propertiesNode = featureNode.get("properties");
+		//convert JsonNode to Hashmap
+		TypeReference<HashMap<String, Object>> collectionType = new TypeReference<HashMap<String, Object>>() {};
+		HashMap<String, Object> properties = mapper.readValue(propertiesNode,collectionType);
+				
 		String description = (String) properties.get("description");
 
-		// Formulate the label of the POI, using first sentence in the
-		// description
-		String delims = "[.,?!]+";
-		String[] tokens = description.split(delims);
-		String name = tokens[0];
+		// Formulate the label of the POI, using first sentence
+		// it is named as "name" as a convention of KML standard
+		String name = createCaptionFromDescription(description);
 		properties.put("name", name);
 
+		//Extract hashtags
 		Set<String> tags = TwitterHelper.searchHashTags(description);
-		properties.put("tags", tags);
-
-		String high_resolution = "";
-		String standard_resolution = "";
-		String thumb_resolution = "";
-		
-		BufferedImage image;
-		File tmpFile;
-
-		// TODO: make a method to save different sizes of the picture
-		// public static savePictureInDifferentSizes (FilePart picture){}
-
-		// Extract BasicImage from Multipart data
-		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) {
-			FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
-			
-			//saves the full-size image
-			high_resolution = saveImageFile(filePart.getFile(), filePart.getContentType());
-			properties.put("high_resolution", Constants.SERVER_NAME_T + "/image/" + high_resolution);
-			
-			//saves the 150px width image
-			image = ImageIO.read(filePart.getFile());
-			image = Scalr.resize(image, 150);
-			tmpFile = new File("tmpPic");
-			ImageIO.write(image, "jpg", tmpFile);
-			
-			thumb_resolution = saveImageFile(tmpFile, filePart.getContentType());
-			properties.put("thumb_resolution", Constants.SERVER_NAME_T + "/image/" + thumb_resolution);
-			
-			//saves the 612px width image
-			image = ImageIO.read(filePart.getFile());
-			image = Scalr.resize(image, 612);
-			tmpFile = new File("tmpPic");
-			ImageIO.write(image, "jpg", tmpFile);
-			
-			standard_resolution = saveImageFile(tmpFile, filePart.getContentType());
-			properties.put("standard_resolution", Constants.SERVER_NAME_T + "/image/" + standard_resolution);
-			
-			
-			// String thumbnail
-			// =convertToInstagramImage(filePart.getFile(),filePart.getContentType());
-			// properties.put("thumbnail", Constants.SERVER_NAME_T + "/image/" +
-			// thumbnail);
-
+		if (tags.size() > 0) {
+			properties.put("tags", tags);
+			// Save feature reference to individual tags
+			HashTagManager.saveFeatureRefInHashTable(tags, geoFeature);
 		}
-
-		properties.put("source_type", "overlay");
-
-		// HTML Content url for the Feature
-		properties.put("descr_url", Constants.SERVER_NAME_T + "/content/"
-				+ geoFeature.id);
-		properties.put("icon_url", Constants.SERVER_NAME_T + "/assets/img/"
-				+ "overlay.png");
-
-		// add timestamp
-		Date date = new Date();
-		long dateInLong = date.getTime();
-		properties.put("created_time", dateInLong);
+		
+		String source_type = (String)properties.get("source_type");
+		if (source_type.equalsIgnoreCase("overlay")) 
+			{
+				properties.put("icon_url", Constants.SERVER_NAME_T + "/assets/img/overlay.png");
+				// HTML Content url for the Feature
+				properties.put("descr_url", Constants.SERVER_NAME_T + "/content/" + geoFeature.id);
+			}
+		else if (source_type.equalsIgnoreCase("mappedInstagram")) 
+			{
+				properties.put("icon_url", Constants.SERVER_NAME_T + "/assets/img/mInsta.png");
+				
+			}
+		
+		
+		// Save Feature reference for particular user
+		 Map<String, Object> user = (Map<String, Object>) properties.get("user");
+		 if (!(user.isEmpty())) {
+		 Users.saveFeatureRefForUser(user.get("id").toString(),
+		 user.get("full_name").toString(),geoFeature);
+		 }
+		//properties.putAll(user);
+		
+		
+		// Save Feature reference for particular mapper
+		 Map<String, Object> mapper = (Map<String, Object>) properties.get("mapper");
+		 if (!(mapper.isEmpty())) 
+		 {
+			 Users.saveFeatureRefForUser(mapper.get("id").toString(), mapper.get("full_name").toString(),geoFeature);
+			 properties.putAll(mapper);
+			
+		 }
+		
+		
+		// save feature reference in particular session
+		if (!(properties.get("session_id")==null)) {
+			String seesion_id = properties.get("session_id").toString();
+			saveFeatureRefInSession(geoFeature, seesion_id);
+		}
+		
+		
+		
+		//Save Image
+		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) 
+		{
+			FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
+			properties = storeImageIn3Sizes(properties,filePart);
+		}
+		
+		
 
 		geoFeature.setProperties(properties);
 
 		geoFeature.insert();
 
-		// Add this feature to perticular session
-		if (propertiesNode.get("session_id") != null) {
-			String seesion_id = propertiesNode.get("session_id").asText();
+
+
+		
+		return ok(toJson(geoFeature));
+	}
+
+
+
+	/**
+	 * @param geoFeature
+	 * @param seesion_id
+	 */
+	private static void saveFeatureRefInSession(Feature geoFeature,
+			String seesion_id) {
+		if (seesion_id != null) {
 			Session session = Session.find().byId(seesion_id);
 			if (session != null) {
 				session.features.add(geoFeature);
 			}
-
 		}
-
-		// TODO: move these task to Feature Model
-		// Save feature reference to individual tags
-		HashTagManager.saveFeatureRefInHashTable(tags, geoFeature);
-
-		// Save Feature reference for perticular user
-		// JsonNode user = node.findPath("user");
-		// if (!(user.isNull())) {
-		// Users.saveFeatureRefForUser(user.get("id").toString(),
-		// user.get("full_name").toString(),geoFeature);
-		// }
-
-		return ok(toJson(geoFeature));
 	}
+
+
+
+	/**
+	 * @param description
+	 * @return
+	 */
+	private static String createCaptionFromDescription(String description) {
+		String delims = "[.,?!]+";
+		String[] tokens = description.split(delims);
+		String name = tokens[0];
+		return name;
+	}
+
+
+
+	/**
+	 * @param featureNode
+	 * @return
+	 * @throws IOException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 */
+	private static Geometry geometryOfFeature(JsonNode featureNode)
+			throws IOException, JsonParseException, JsonMappingException {
+		JsonNode coordinatesNode = featureNode.findPath("coordinates");
+		TypeReference<Double[]> collectionTypeD = new TypeReference<Double[]>() {};
+		Double[] coordinates = mapper.readValue(coordinatesNode,collectionTypeD);
+		Geometry geometry = new Point(coordinates[0], coordinates[1]);
+		return geometry;
+	}
+
+
+
+	/**
+	 * @param properties
+	 * @param filePart
+	 * @return 
+	 * @throws IOException
+	 */
+	private static HashMap<String, Object> storeImageIn3Sizes(HashMap<String, Object> properties, FilePart filePart)
+			throws IOException {
+		
+		String high_resolution = "";
+		String standard_resolution = "";
+		String thumbnail = "";
+
+		BufferedImage image;
+		File tmpFile;
+		
+		Map<String, String> images = new HashMap<String, String>();
+
+		//saves the full-size image
+		high_resolution = saveImageFile(filePart.getFile(), filePart.getContentType());
+		images.put("high_resolution", Constants.SERVER_NAME_T + "/image/" + high_resolution);
+		
+
+		//saves the 150px width image
+		image = ImageIO.read(filePart.getFile());
+		image = Scalr.resize(image, 150);
+		tmpFile = new File("tmpPic");
+		ImageIO.write(image, "jpg", tmpFile);
+
+		thumbnail = saveImageFile(tmpFile, filePart.getContentType());
+		images.put("thumbnail", Constants.SERVER_NAME_T + "/image/" + thumbnail);
+
+		//saves the 612px width image
+		image = ImageIO.read(filePart.getFile());
+		image = Scalr.resize(image, 612);
+		tmpFile = new File("tmpPic");
+		ImageIO.write(image, "jpg", tmpFile);
+
+		standard_resolution = saveImageFile(tmpFile, filePart.getContentType());
+		images.put("standard_resolution", Constants.SERVER_NAME_T + "/image/" + standard_resolution);
+
+		properties.put("images", images);
+		return properties;
+
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	public static Result updateGeoFeature() throws JsonParseException,
 			JsonMappingException, IOException {
@@ -213,11 +291,7 @@ public class Features extends Controller {
 				.get("description");
 		if (!(description.equals(oldDescription))) {
 
-			// Formulate the label of the POI, using first sentence in the
-			// description
-			String delims = "[.,?!]+";
-			String[] tokens = description.split(delims);
-			String name = tokens[0];
+			String name = createCaptionFromDescription(description);
 			storedFeature.properties.put("name", name);
 			storedFeature.properties.put("description", description);
 
@@ -332,6 +406,10 @@ public class Features extends Controller {
 		return ok(toJson(collection));
 	}
 
+	
+	
+	
+	
 	/**
 	 * This method is used to get the pois from a service and return a GeoJSON
 	 * document with the data retrieved given a longitude, latitude and a radius
@@ -368,6 +446,11 @@ public class Features extends Controller {
 		return ok(toJson(collection));
 	}
 
+	
+	
+	
+	
+	
 	public static Result deleteGeoFeature(String id, String user_id) {
 		Feature feature = Feature.find().byId(id);
 		if (feature == null) {

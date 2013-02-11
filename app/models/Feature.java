@@ -2,6 +2,7 @@ package models;
 
 import geometry.Geometry;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import org.bson.types.ObjectId;
@@ -55,6 +56,10 @@ public class Feature extends Model
 	
 	public void setProperties(HashMap<String, Object> props){
 		this.properties = props;
+		// add timestamp when the POI created
+		Date date = new Date();
+		long dateInLong = date.getTime();
+		this.properties.put("created_time", dateInLong);
 	}
 	
 	public HashMap<String, Object> getProperties(){

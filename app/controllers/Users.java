@@ -44,7 +44,21 @@ public class Users extends Controller{
 				User user = User.find().byId(id);
 				user.features.add(feature);
 				user.update();
-
+		}
+	}
+	
+	
+	public static String deleteFeatureRefForUser(String id, Feature feature)
+	{
+		
+			if (User.find().byId(id)==null) {
+				return "user not found!";
+			}
+			else {
+				User user = User.find().byId(id);
+				user.features.remove(feature);
+				user.update();
+				return "Feature ref deleted";
 		}
 	}
 	

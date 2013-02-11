@@ -23,12 +23,12 @@ public class User extends Model
 	@Id
 	public String id;
 	
-	
 	public String full_name;
+	
+	public String profile_picture;
 	
 	@Reference(ignoreMissing = true)
 	public List<Feature> features;
-	
 	
 	
 	public static Model.Finder<String, User> find()
@@ -53,6 +53,18 @@ public class User extends Model
 		}
 		
 		this.id = id;
+		this.full_name = full_name;
+	}
+	
+	public User(String id, String full_name, String profile_picture) {
+		
+		if (features == null) {
+			features = new ArrayList<Feature>();
+		}
+		
+		this.id = id;
+		this.full_name = full_name;
+		this.profile_picture = profile_picture;
 	}
 	
 	
