@@ -73,52 +73,76 @@ public class Features extends Controller {
 		TypeReference<HashMap<String, Object>> collectionType = new TypeReference<HashMap<String, Object>>() {};
 		HashMap<String, Object> properties = mapper.readValue(propertiesNode,collectionType);
 				
-		String description = (String) properties.get("description");
-
-		// Formulate the label of the POI, using first sentence
-		// it is named as "name" as a convention of KML standard
-		String name = createCaptionFromDescription(description);
-		properties.put("name", name);
-
-		//Extract hashtags
-		Set<String> tags = TwitterHelper.searchHashTags(description);
-		if (tags.size() > 0) {
-			properties.put("tags", tags);
-			// Save feature reference to individual tags
-			HashTagManager.saveFeatureRefInHashTable(tags, geoFeature);
-		}
+		
 		
 		String source_type = (String)properties.get("source_type");
+		
 		if (source_type.equalsIgnoreCase("overlay")) 
 			{
+				String description = (String) properties.get("description");
+				// Formulate the label of the POI, using first sentence
+				// it is named as "name" as a convention of KML standard
+				String name = createCaptionFromDescription(description);
+				properties.put("name", name);
+
+				//Extract hashtags
+				Set<String> tags = TwitterHelper.searchHashTags(description);
+				if (tags.size() > 0) 
+				{
+					properties.put("tags", tags);
+					// Save feature reference to individual tags
+					HashTagManager.saveFeatureRefInHashTable(tags, geoFeature);
+				}
+				
 				properties.put("icon_url", Constants.SERVER_NAME_T + "/assets/img/overlay.png");
 				// HTML Content url for the Feature
 				properties.put("descr_url", Constants.SERVER_NAME_T + "/content/" + geoFeature.id);
+				
+				// Save Feature reference for particular user
+				 Map<String, Object> user = (Map<String, Object>) properties.get("user");
+				 if (!(user.isEmpty())) 
+				 {
+					Users.saveFeatureRefForUser(user.get("id").toString(),
+					user.get("full_name").toString(),geoFeature);
+				 }
 			}
-		else if (source_type.equalsIgnoreCase("mappedInstagram")) 
+		else if (source_type.equalsIgnoreCase("mapped_instagram")) 
 			{
+			
+			String description = (String) properties.get("mapper_description");
+			// Formulate the label of the POI, using first sentence
+			// it is named as "name" as a convention of KML standard
+			String name = createCaptionFromDescription(description);
+			properties.put("name", name);
+
+			//Extract hashtags
+			Set<String> tags = TwitterHelper.searchHashTags(description);
+			if (tags.size() > 0) 
+			{
+				properties.put("tags", tags);
+				// Save feature reference to individual tags
+				HashTagManager.saveFeatureRefInHashTable(tags, geoFeature);
+			}
+			
 				properties.put("icon_url", Constants.SERVER_NAME_T + "/assets/img/mInsta.png");
 				
+				// Save Feature reference for particular user
+				 Map<String, Object> user = (Map<String, Object>) properties.get("user");
+				 if (!(user.isEmpty())) 
+				 {
+					Users.saveFeatureRefForUser(user.get("id").toString(),
+					user.get("full_name").toString(),geoFeature);
+				 }
+				 
+				 
+				// Save Feature reference for particular mapper
+				 Map<String, Object> mapper = (Map<String, Object>) properties.get("mapper");
+				 if (!(mapper.isEmpty())) 
+				 {
+					 Users.saveFeatureRefForUser(mapper.get("id").toString(), mapper.get("full_name").toString(),geoFeature);					
+				 }
+				
 			}
-		
-		
-		// Save Feature reference for particular user
-		 Map<String, Object> user = (Map<String, Object>) properties.get("user");
-		 if (!(user.isEmpty())) {
-		 Users.saveFeatureRefForUser(user.get("id").toString(),
-		 user.get("full_name").toString(),geoFeature);
-		 }
-		//properties.putAll(user);
-		
-		
-		// Save Feature reference for particular mapper
-		 Map<String, Object> mapper = (Map<String, Object>) properties.get("mapper");
-		 if (!(mapper.isEmpty())) 
-		 {
-			 Users.saveFeatureRefForUser(mapper.get("id").toString(), mapper.get("full_name").toString(),geoFeature);
-			 properties.putAll(mapper);
-			
-		 }
 		
 		
 		// save feature reference in particular session
