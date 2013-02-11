@@ -130,10 +130,8 @@ public class Features extends Controller {
 				 Map<String, Object> user = (Map<String, Object>) properties.get("user");
 				 if (!(user.isEmpty())) 
 				 {
-					Users.saveFeatureRefForUser(user.get("id").toString(),
-					user.get("full_name").toString(),geoFeature);
+					Users.saveFeatureRefForUser(user.get("id").toString(),user.get("full_name").toString(),geoFeature);
 				 }
-				 
 				 
 				// Save Feature reference for particular mapper
 				 Map<String, Object> mapper = (Map<String, Object>) properties.get("mapper");
@@ -146,7 +144,8 @@ public class Features extends Controller {
 		
 		
 		// save feature reference in particular session
-		if (!(properties.get("session_id")==null)) {
+		if (!(properties.get("session_id") == null)) 
+		{
 			String seesion_id = properties.get("session_id").toString();
 			saveFeatureRefInSession(geoFeature, seesion_id);
 		}
@@ -172,6 +171,111 @@ public class Features extends Controller {
 		return ok(toJson(geoFeature));
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public static Result updateGeoFeature() throws JsonParseException,JsonMappingException, IOException 
+	
+	{
+
+		// String low_resolution =
+		// convertToInstagramImage(filePart.getFile(),filePart.getContentType());
+
+		FilePart jsonFilePart = ctx().request().body().asMultipartFormData().getFile("feature");
+		BufferedReader fileReader = new BufferedReader(new FileReader(jsonFilePart.getFile()));
+		JsonNode featureNode = mapper.readTree(fileReader);
+
+
+		//create new feature object for geometry
+		Feature geoFeature = Feature.find().byId(featureNode.get("id").asText());
+
+		JsonNode propertiesNode = featureNode.get("properties");
+		//convert JsonNode to Hashmap
+		TypeReference<HashMap<String, Object>> collectionType = new TypeReference<HashMap<String, Object>>() {};
+		HashMap<String, Object> newProperties = mapper.readValue(propertiesNode,collectionType);
+		
+		HashMap<String, Object> tempProperties = new HashMap<String, Object>();
+		
+
+
+		String source_type = (String)newProperties.get("source_type");
+
+		if (source_type.equalsIgnoreCase("overlay")) 
+		{
+			String description = (String) newProperties.get("description");
+			// Formulate the label of the POI, using first sentence
+			// it is named as "name" as a convention of KML standard
+			String name = createCaptionFromDescription(description);
+			tempProperties.put("name", name);
+			
+			//remove old hashtags reference
+			Set<String> tags_old = TwitterHelper.searchHashTags(geoFeature.properties.get("description").toString());
+			HashTagManager.removeFeatureRefInHashTable(tags_old, geoFeature);
+
+			//Extract new hashtags and save reference
+			Set<String> tags = TwitterHelper.searchHashTags(description);
+			if (tags.size() > 0) 
+			{
+				tempProperties.put("tags", tags);
+				// Save feature reference to individual tags
+				HashTagManager.saveFeatureRefInHashTable(tags, geoFeature);
+			}
+		
+		}
+		else if (source_type.equalsIgnoreCase("mapped_instagram")) 
+		{
+
+			String mapper_description = (String) newProperties.get("mapper_description");
+			tempProperties.put("mapper_description", mapper_description);
+			// Formulate the label of the POI, using first sentence
+			// it is named as "name" as a convention of KML standard
+			String name = createCaptionFromDescription(mapper_description);
+			tempProperties.put("name", name);
+
+			//remove old hashtags reference
+			Set<String> tags_old = TwitterHelper.searchHashTags(geoFeature.properties.get("mapper_description").toString());
+			HashTagManager.removeFeatureRefInHashTable(tags_old, geoFeature);
+			
+			//Extract new hashtags
+			Set<String> tags = TwitterHelper.searchHashTags(mapper_description);
+			if (tags.size() > 0) 
+			{
+				tempProperties.put("tags", tags);
+				// Save feature reference to individual tags
+				HashTagManager.saveFeatureRefInHashTable(tags, geoFeature);
+			}
+			
+		}
+
+
+
+		//FIXME: remove old files from db
+		// sudo code:
+		/*
+		 * 1. create new Images object model
+		 * 2. save all size images ref in the object
+		 * 3. update/delete objects by search
+		 * */
+		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) 
+		{
+			FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
+			tempProperties = storeImageIn3Sizes(tempProperties,filePart);
+		}
+
+		geoFeature.updateProperties(tempProperties);
+		geoFeature.update();
+
+		return ok(toJson(geoFeature));
+	}
+	
+	
+	
 
 
 	/**
@@ -281,7 +385,7 @@ public class Features extends Controller {
 	
 	
 
-	public static Result updateGeoFeature() throws JsonParseException,
+	public static Result updateGeoFeature_old() throws JsonParseException,
 			JsonMappingException, IOException {
 		FilePart jsonFilePart = ctx().request().body().asMultipartFormData()
 				.getFile("feature");

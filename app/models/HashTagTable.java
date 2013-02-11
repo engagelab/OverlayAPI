@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import scala.reflect.generic.Trees.This;
+
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 import com.google.code.morphia.annotations.Reference;
@@ -54,5 +56,11 @@ public class HashTagTable extends Model {
 	public static HashTagTable byTag(String hashTag) {
         return find().field("hashTag").equal(hashTag).get();
     }
+	
+	public void removeFeature(Feature feature)
+	{
+		this.features.remove(feature);
+		this.update();
+	}
 
 }

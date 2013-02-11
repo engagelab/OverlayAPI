@@ -62,8 +62,14 @@ public class Feature extends Model
 		this.properties.put("created_time", dateInLong);
 	}
 	
+	
 	public HashMap<String, Object> getProperties(){
 		return properties;
 	}
+	
+	public void updateProperties(HashMap<String, Object> props){
+		this.properties.putAll(props);
+	}
+	
 	
 }

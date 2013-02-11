@@ -61,6 +61,21 @@ public class HashTagManager extends Controller{
 	}
 	
 	
+	public static void removeFeatureRefInHashTable(Set<String> tags, Feature feature)
+	{
+		for (String hashTag : tags) {
+			if (HashTagTable.byTag(hashTag)!=null) {
+				
+				HashTagTable table = HashTagTable.byTag(hashTag);
+				table.removeFeature(feature);
+				table.update();
+			}
+			
+		}
+	}
+	
+	
+	
 	
 	
 }

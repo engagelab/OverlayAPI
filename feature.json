@@ -1,5 +1,6 @@
 {
     "type": "Feature",
+    "id":"5118e693da067fe692b19b57",
     "geometry":
                 {
                    "type": "Point",
@@ -19,6 +20,6 @@
                					"full_name":"Martin Havnør",
                					"location":[10.756731033325195,59.9238826969285]
                				},
-               	 	"mapper_description": "I can also see the #Sun"
+               	 	"mapper_description": "I can also see the #One #Two"
                 }
 }
