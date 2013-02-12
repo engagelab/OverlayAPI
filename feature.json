@@ -1,6 +1,5 @@
 {
     "type": "Feature",
-    "id":"511a2130b76036f383a80967",
     "geometry":
                 {
                    "type": "Point",
@@ -8,13 +7,13 @@
                 },
     "properties":
                 {
-               		"source_type": "overlay",
+               		"source_type": "mapped_instagram",
                		"user":{
                					"id":"808270471",
                					"full_name":"Martin Havnør",
                					"location":[10.756731033325195,59.9238826969285]
                				},
-               		"description": "Oslo is #Fun in #dream",
+               		"description": "Oslo is #tree in #master",
                		"mapper":{
                					"id":"808270471",
                					"full_name":"Martin Havnør",

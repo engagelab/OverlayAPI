@@ -364,11 +364,18 @@ public class InstagramParser {
 		//JsonNode image = jsonNode.findPath("images");
 		//properties.put("images", image);
 		
-		JsonNode image = jsonNode.findPath("standard_resolution");
-		String standard_resolution = image.get("url").asText();
-		properties.put("standard_resolution", standard_resolution);
+		HashMap<String, Object> images = new HashMap<String, Object>();
 
+		JsonNode standard_resolutionNode = jsonNode.findPath("standard_resolution");
+		String standard_resolution = standard_resolutionNode.get("url").asText();
 		
+		JsonNode thumbnailNode = jsonNode.findPath("thumbnail");
+		String thumbnail = thumbnailNode.get("url").asText();
+		
+		images.put("standard_resolution", standard_resolution);
+		images.put("thumbnail", thumbnail);
+
+		properties.put("images", images);
 		
 		
 		JsonNode caption = jsonNode.findPath("caption");
