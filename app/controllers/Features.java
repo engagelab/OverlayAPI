@@ -44,6 +44,7 @@ import play.mvc.Results;
 import com.mongodb.BasicDBObject;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSFile;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 /**
  * @author Muhammad Fahied
@@ -52,6 +53,8 @@ import com.mongodb.gridfs.GridFSFile;
 public class Features extends Controller {
 	
 	private static ObjectMapper mapper = new ObjectMapper();
+	public static HashMap<String, Object> propertiesJSON = new HashMap<String, Object>();
+	public static HashMap<String, Object> properties = new HashMap<String, Object>();
 
 	public static Result createGeoFeature() throws JsonParseException,
 			JsonMappingException, IOException {
@@ -71,20 +74,23 @@ public class Features extends Controller {
 		JsonNode propertiesNode = featureNode.get("properties");
 		//convert JsonNode to Hashmap
 		TypeReference<HashMap<String, Object>> collectionType = new TypeReference<HashMap<String, Object>>() {};
-		HashMap<String, Object> properties = mapper.readValue(propertiesNode,collectionType);
+		propertiesJSON = mapper.readValue(propertiesNode,collectionType);
 				
 		
 		
-		String source_type = (String)properties.get("source_type");
+		String source_type = (String)propertiesJSON.get("source_type");
 		
 		if (source_type.equalsIgnoreCase("overlay")) 
 			{
-				String description = (String) properties.get("description");
+				String description = (String) propertiesJSON.get("description");
 				// Formulate the label of the POI, using first sentence
 				// it is named as "name" as a convention of KML standard
+				//Save properties from JSON to new object 
 				String name = createCaptionFromDescription(description);
+				properties.put("source_type", source_type);
+				properties.put("description", description);
 				properties.put("name", name);
-
+				
 				//Extract hashtags
 				Set<String> tags = TwitterHelper.searchHashTags(description);
 				if (tags.size() > 0) 
@@ -99,22 +105,27 @@ public class Features extends Controller {
 				properties.put("descr_url", Constants.SERVER_NAME_T + "/content/" + geoFeature.id);
 				
 				// Save Feature reference for particular user
-				 Map<String, Object> user = (Map<String, Object>) properties.get("user");
+				 Map<String, Object> user = (Map<String, Object>) propertiesJSON.get("user");
 				 if (!(user.isEmpty())) 
 				 {
 					Users.saveFeatureRefForUser(user.get("id").toString(),
 					user.get("full_name").toString(),geoFeature);
 				 }
+				 
+				 properties.put("user", user);
+					
 			}
 		else if (source_type.equalsIgnoreCase("mapped_instagram")) 
 			{
+				String description = (String) propertiesJSON.get("description");
+				// Formulate the label of the POI, using first sentence
+				// it is named as "name" as a convention of KML standard
+				//Save properties from JSON to new object 
+				String name = createCaptionFromDescription(description);
+				properties.put("source_type", source_type);
+				properties.put("description", description);
+				properties.put("name", name);
 			
-			String description = (String) properties.get("mapper_description");
-			// Formulate the label of the POI, using first sentence
-			// it is named as "name" as a convention of KML standard
-			String name = createCaptionFromDescription(description);
-			properties.put("name", name);
-
 			//Extract hashtags
 			Set<String> tags = TwitterHelper.searchHashTags(description);
 			if (tags.size() > 0) 
@@ -127,30 +138,30 @@ public class Features extends Controller {
 				properties.put("icon_url", Constants.SERVER_NAME_T + "/assets/img/mInsta.png");
 				
 				// Save Feature reference for particular user
-				 Map<String, Object> user = (Map<String, Object>) properties.get("user");
+				 Map<String, Object> user = (Map<String, Object>) propertiesJSON.get("user");
 				 if (!(user.isEmpty())) 
 				 {
 					Users.saveFeatureRefForUser(user.get("id").toString(),user.get("full_name").toString(),geoFeature);
 				 }
 				 
 				// Save Feature reference for particular mapper
-				 Map<String, Object> mapper = (Map<String, Object>) properties.get("mapper");
+				 Map<String, Object> mapper = (Map<String, Object>) propertiesJSON.get("mapper");
 				 if (!(mapper.isEmpty())) 
 				 {
 					 Users.saveFeatureRefForUser(mapper.get("id").toString(), mapper.get("full_name").toString(),geoFeature);					
 				 }
 				
+				 properties.put("user", user);
+				 properties.put("mapper", mapper);
 			}
 		
-		
 		// save feature reference in particular session
-		if (!(properties.get("session_id") == null)) 
+		if (!(propertiesJSON.get("session_id") == null)) 
 		{
-			String seesion_id = properties.get("session_id").toString();
+			String seesion_id = propertiesJSON.get("session_id").toString();
 			saveFeatureRefInSession(geoFeature, seesion_id);
+			properties.put("seesion_id", seesion_id);
 		}
-		
-		
 		
 		//Save Image
 		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) 
@@ -159,14 +170,8 @@ public class Features extends Controller {
 			properties = storeImageIn3Sizes(properties,filePart);
 		}
 		
-
 		geoFeature.setProperties(properties);
-
 		geoFeature.insert();
-
-
-
-		
 		return ok(toJson(geoFeature));
 	}
 
