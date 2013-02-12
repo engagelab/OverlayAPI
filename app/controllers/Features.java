@@ -81,6 +81,7 @@ public class Features extends Controller {
 		
 		String source_type = (String)propertiesJSON.get("source_type");
 		
+		
 		if (source_type.equalsIgnoreCase("overlay")) 
 			{
 				String description = (String) propertiesJSON.get("description");
@@ -119,16 +120,19 @@ public class Features extends Controller {
 		else if (source_type.equalsIgnoreCase("mapped_instagram")) 
 			{
 				String description = (String) propertiesJSON.get("description");
+				properties.put("description", description);
+			
+				String mapper_description = (String) propertiesJSON.get("mapper_description");
 				// Formulate the label of the POI, using first sentence
 				// it is named as "name" as a convention of KML standard
 				//Save properties from JSON to new object 
-				String name = createCaptionFromDescription(description);
+				String name = createCaptionFromDescription(mapper_description);
 				properties.put("source_type", source_type);
-				properties.put("description", description);
+				properties.put("mapper_description", mapper_description);
 				properties.put("name", name);
 			
 			//Extract hashtags
-			Set<String> tags = TwitterHelper.searchHashTags(description);
+			Set<String> tags = TwitterHelper.searchHashTags(mapper_description);
 			if (tags.size() > 0) 
 			{
 				properties.put("tags", tags);
