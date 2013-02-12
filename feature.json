@@ -1,6 +1,6 @@
 {
     "type": "Feature",
-    "id":"5118e693da067fe692b19b57",
+    "id":"511a199cda06b208c92cc881",
     "geometry":
                 {
                    "type": "Point",
@@ -14,12 +14,12 @@
                					"full_name":"Martin Havnør",
                					"location":[10.756731033325195,59.9238826969285]
                				},
-               		"description": "Oslo is #White in #Winter",
+               		"description": "Oslo is #tree in #master",
                		"mapper":{
                					"id":"808270471",
                					"full_name":"Martin Havnør",
                					"location":[10.756731033325195,59.9238826969285]
                				},
-               	 	"mapper_description": "I can also see the #ding #dong"
+               	 	"mapper_description": "I can also see the #twinkle #star"
                 }
 }

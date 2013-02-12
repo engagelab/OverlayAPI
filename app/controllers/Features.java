@@ -53,15 +53,16 @@ import com.sun.org.apache.bcel.internal.generic.NEW;
 public class Features extends Controller {
 	
 	private static ObjectMapper mapper = new ObjectMapper();
-	public static HashMap<String, Object> propertiesJSON = new HashMap<String, Object>();
-	public static HashMap<String, Object> properties = new HashMap<String, Object>();
+
 
 	public static Result createGeoFeature() throws JsonParseException,
 			JsonMappingException, IOException {
 
+		  HashMap<String, Object> propertiesJSON = new HashMap<String, Object>();
+		  HashMap<String, Object> properties = new HashMap<String, Object>();
 		// String low_resolution =
 		// convertToInstagramImage(filePart.getFile(),filePart.getContentType());
-
+		
 		FilePart jsonFilePart = ctx().request().body().asMultipartFormData().getFile("feature");
 		BufferedReader fileReader = new BufferedReader(new FileReader(jsonFilePart.getFile()));
 		JsonNode featureNode = mapper.readTree(fileReader);
@@ -188,6 +189,9 @@ public class Features extends Controller {
 	
 	{
 
+		 HashMap<String, Object> propertiesJSON = new HashMap<String, Object>();
+		 HashMap<String, Object> properties = new HashMap<String, Object>();
+		  
 		// String low_resolution =
 		// convertToInstagramImage(filePart.getFile(),filePart.getContentType());
 
@@ -195,28 +199,27 @@ public class Features extends Controller {
 		BufferedReader fileReader = new BufferedReader(new FileReader(jsonFilePart.getFile()));
 		JsonNode featureNode = mapper.readTree(fileReader);
 
-
 		//create new feature object for geometry
 		Feature geoFeature = Feature.find().byId(featureNode.get("id").asText());
 
 		JsonNode propertiesNode = featureNode.get("properties");
 		//convert JsonNode to Hashmap
 		TypeReference<HashMap<String, Object>> collectionType = new TypeReference<HashMap<String, Object>>() {};
-		HashMap<String, Object> newProperties = mapper.readValue(propertiesNode,collectionType);
+		propertiesJSON = mapper.readValue(propertiesNode,collectionType);
 		
-		HashMap<String, Object> tempProperties = new HashMap<String, Object>();
+		properties = new HashMap<String, Object>();
 		
 
 
-		String source_type = (String)newProperties.get("source_type");
+		String source_type = (String)propertiesJSON.get("source_type");
 
 		if (source_type.equalsIgnoreCase("overlay")) 
 		{
-			String description = (String) newProperties.get("description");
+			String description = (String) propertiesJSON.get("description");
 			// Formulate the label of the POI, using first sentence
 			// it is named as "name" as a convention of KML standard
 			String name = createCaptionFromDescription(description);
-			tempProperties.put("name", name);
+			properties.put("name", name);
 			
 			//remove old hashtags reference
 			Set<String> tags_old = TwitterHelper.searchHashTags(geoFeature.properties.get("description").toString());
@@ -226,7 +229,7 @@ public class Features extends Controller {
 			Set<String> tags = TwitterHelper.searchHashTags(description);
 			if (tags.size() > 0) 
 			{
-				tempProperties.put("tags", tags);
+				properties.put("tags", tags);
 				// Save feature reference to individual tags
 				HashTagManager.saveFeatureRefInHashTable(tags, geoFeature);
 			}
@@ -235,12 +238,12 @@ public class Features extends Controller {
 		else if (source_type.equalsIgnoreCase("mapped_instagram")) 
 		{
 
-			String mapper_description = (String) newProperties.get("mapper_description");
-			tempProperties.put("mapper_description", mapper_description);
+			String mapper_description = (String) propertiesJSON.get("mapper_description");
+			properties.put("mapper_description", mapper_description);
 			// Formulate the label of the POI, using first sentence
 			// it is named as "name" as a convention of KML standard
 			String name = createCaptionFromDescription(mapper_description);
-			tempProperties.put("name", name);
+			properties.put("name", name);
 
 			//remove old hashtags reference
 			Set<String> tags_old = TwitterHelper.searchHashTags(geoFeature.properties.get("mapper_description").toString());
@@ -250,7 +253,7 @@ public class Features extends Controller {
 			Set<String> tags = TwitterHelper.searchHashTags(mapper_description);
 			if (tags.size() > 0) 
 			{
-				tempProperties.put("tags", tags);
+				properties.put("tags", tags);
 				// Save feature reference to individual tags
 				HashTagManager.saveFeatureRefInHashTable(tags, geoFeature);
 			}
@@ -269,10 +272,10 @@ public class Features extends Controller {
 		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) 
 		{
 			FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
-			tempProperties = storeImageIn3Sizes(tempProperties,filePart);
+			properties = storeImageIn3Sizes(properties,filePart);
 		}
 
-		geoFeature.updateProperties(tempProperties);
+		geoFeature.updateProperties(properties);
 		geoFeature.update();
 
 		return ok(toJson(geoFeature));
