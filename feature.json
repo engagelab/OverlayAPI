@@ -1,5 +1,6 @@
 {
     "type": "Feature",
+    "id":"511cad2c0364f1bea54ba3ca",
     "geometry":
                 {
                    "type": "Point",
@@ -19,6 +20,11 @@
                					"full_name":"Martin Havnør",
                					"location":[10.756731033325195,59.9238826969285]
                				},
-               	 	"mapper_description": "I can also see the #twinkle #star"
+               	 	"mapper_description": "I can also see the #mapped #instagram",
+               	 	 "images" : {
+      							"thumbnail" : "http://intermedia-prod03.uio.no:9010/image/511ba790b760475df91d6937",
+      							"standard_resolution" : "http://intermedia-prod03.uio.no:9010/image/511ba790b760475df91d6939"
+   							 }
                 }
+                
 }

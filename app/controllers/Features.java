@@ -44,7 +44,6 @@ import play.mvc.Results;
 import com.mongodb.BasicDBObject;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSFile;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 
 /**
  * @author Muhammad Fahied
@@ -107,14 +106,22 @@ public class Features extends Controller {
 				properties.put("descr_url", Constants.SERVER_NAME_T + "/content/" + geoFeature.id);
 				
 				// Save Feature reference for particular user
-				 Map<String, Object> user = (Map<String, Object>) propertiesJSON.get("user");
-				 if (!(user.isEmpty())) 
-				 {
+				@SuppressWarnings("unchecked")
+				Map<String, Object> user = (Map<String, Object>) propertiesJSON.get("user");
+				if (!(user.isEmpty())) 
+				{
 					Users.saveFeatureRefForUser(user.get("id").toString(),
-					user.get("full_name").toString(),geoFeature);
-				 }
-				 
-				 properties.put("user", user);
+							user.get("full_name").toString(),geoFeature);
+				}
+
+				properties.put("user", user);
+
+				if (ctx().request().body().asMultipartFormData().getFile("picture") != null) 
+				{
+					FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
+					properties = storeImageIn3Sizes(properties,filePart);
+				}
+					
 					
 			}
 		else if (source_type.equalsIgnoreCase("mapped_instagram")) 
@@ -143,21 +150,29 @@ public class Features extends Controller {
 				properties.put("icon_url", Constants.SERVER_NAME_T + "/assets/img/mInsta.png");
 				
 				// Save Feature reference for particular user
-				 Map<String, Object> user = (Map<String, Object>) propertiesJSON.get("user");
+				 @SuppressWarnings("unchecked")
+				Map<String, Object> user = (Map<String, Object>) propertiesJSON.get("user");
 				 if (!(user.isEmpty())) 
 				 {
 					Users.saveFeatureRefForUser(user.get("id").toString(),user.get("full_name").toString(),geoFeature);
+					 properties.put("user", user);
 				 }
 				 
 				// Save Feature reference for particular mapper
-				 Map<String, Object> mapper = (Map<String, Object>) propertiesJSON.get("mapper");
+				 @SuppressWarnings("unchecked")
+				Map<String, Object> mapper = (Map<String, Object>) propertiesJSON.get("mapper");
 				 if (!(mapper.isEmpty())) 
 				 {
-					 Users.saveFeatureRefForUser(mapper.get("id").toString(), mapper.get("full_name").toString(),geoFeature);					
+					 Users.saveFeatureRefForUser(mapper.get("id").toString(), mapper.get("full_name").toString(),geoFeature);	
+					 properties.put("mapper", mapper);
+
 				 }
 				
-				 properties.put("user", user);
-				 properties.put("mapper", mapper);
+				 @SuppressWarnings("unchecked")
+				 Map<String, Object> images = (Map<String, Object>) propertiesJSON.get("images");
+				 if (!(images.isEmpty())) {
+					 properties.put("images", images);
+				}
 			}
 		
 		// save feature reference in particular session
@@ -168,12 +183,6 @@ public class Features extends Controller {
 			properties.put("seesion_id", seesion_id);
 		}
 		
-		//Save Image
-		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) 
-		{
-			FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
-			properties = storeImageIn3Sizes(properties,filePart);
-		}
 		
 		geoFeature.setProperties(properties);
 		geoFeature.insert();
@@ -238,6 +247,12 @@ public class Features extends Controller {
 				// Save feature reference to individual tags
 				HashTagManager.saveFeatureRefInHashTable(tags, geoFeature);
 			}
+			
+			if (ctx().request().body().asMultipartFormData().getFile("picture") != null) 
+			{
+				FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
+				properties = storeImageIn3Sizes(properties,filePart);
+			}
 		
 		}
 		else if (source_type.equalsIgnoreCase("mapped_instagram")) 
@@ -265,20 +280,6 @@ public class Features extends Controller {
 			
 		}
 
-
-
-		//FIXME: remove old files from db
-		// sudo code:
-		/*
-		 * 1. create new Images object model
-		 * 2. save all size images ref in the object
-		 * 3. update/delete objects by search
-		 * */
-		if (ctx().request().body().asMultipartFormData().getFile("picture") != null) 
-		{
-			FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
-			properties = storeImageIn3Sizes(properties,filePart);
-		}
 
 		geoFeature.updateProperties(properties);
 		geoFeature.update();
