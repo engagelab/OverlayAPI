@@ -4,27 +4,16 @@
     "geometry":
                 {
                    "type": "Point",
-                   "coordinates": [10.7552, 59.9178]
+                   "coordinates": [10.7167, 59.9427]
                 },
     "properties":
                 {
-               		"source_type": "mapped_instagram",
+               		"source_type": "overlay",
                		"user":{
                					"id":"808270471",
                					"full_name":"Martin Havnør",
                					"location":[10.756731033325195,59.9238826969285]
                				},
-               		"description": "Oslo is #tree in #master",
-               		"mapper":{
-               					"id":"808270471",
-               					"full_name":"Martin Havnør",
-               					"location":[10.756731033325195,59.9238826969285]
-               				},
-               	 	"mapper_description": "I can also see the #mapped #instagram",
-               	 	 "images" : {
-      							"thumbnail" : "http://intermedia-prod03.uio.no:9010/image/511ba790b760475df91d6937",
-      							"standard_resolution" : "http://intermedia-prod03.uio.no:9010/image/511ba790b760475df91d6939"
-   							 }
+               		"description": "This is #first #overlay POI."
                 }
-                
 }

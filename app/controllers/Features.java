@@ -573,8 +573,12 @@ public class Features extends Controller {
 		double latD = Double.parseDouble(lat);
 		double radiusD = Double.parseDouble(distanceInMeters);
 
+//		List<Feature> features = Feature.find().disableValidation()
+//				.field("geometry.coordinates").near(latD, lngD,radiusD/111.12*1000).limit(10)
+//				.asList();
+		
 		List<Feature> features = Feature.find().disableValidation()
-				.field("geometry.coordinates").near(latD, lngD,radiusD/111.12*1000).limit(10)
+				.field("geometry.coordinates").near(latD, lngD).limit(10)
 				.asList();
 
 		List<Feature> instaPOIs = InstagramParser.searchInstaByRadius(lngD,
