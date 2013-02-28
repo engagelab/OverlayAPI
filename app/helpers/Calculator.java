@@ -129,7 +129,7 @@ public class Calculator {
 		double wt = il;
 		double mas = (u1 + u2) / 2;
 		double men = (u1 - u2) / 2;
-		int flag = 0;
+		//int flag = 0;
 
 		double w2;
 		double g1;

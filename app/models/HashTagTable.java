@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-import scala.reflect.generic.Trees.This;
 
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
