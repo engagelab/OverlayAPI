@@ -27,7 +27,7 @@ import play.mvc.Result;
 
 public class Sessions extends Controller{	
 	
-	public static Result create() throws JsonParseException, JsonMappingException, IOException
+	public static Result createSession() throws JsonParseException, JsonMappingException, IOException
 	{
 	
 		ObjectMapper mapper = new ObjectMapper();

@@ -57,8 +57,8 @@ public class Features extends Controller {
 	public static Result createGeoFeature() throws JsonParseException,
 			JsonMappingException, IOException {
 
-		  HashMap<String, Object> propertiesJSON = new HashMap<String, Object>();
-		  HashMap<String, Object> properties = new HashMap<String, Object>();
+		HashMap<String, Object> propertiesJSON = new HashMap<String, Object>();
+		HashMap<String, Object> properties = new HashMap<String, Object>();
 		// String low_resolution =
 		// convertToInstagramImage(filePart.getFile(),filePart.getContentType());
 		
@@ -222,7 +222,6 @@ public class Features extends Controller {
 		
 		properties = new HashMap<String, Object>();
 		
-
 
 		String source_type = (String)propertiesJSON.get("source_type");
 
