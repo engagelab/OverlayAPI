@@ -70,7 +70,8 @@ public class InstagramParser {
 				"max_timestamp="+unixTime +"&"+
 				"client_id=a80dd450be84452a91527609a4eae97b"
 				+"&lat="+lat+"&lng="+lng
-				+"&distance=2000";
+				//+"&distance=2000"
+				;
 		
 		/*
 
