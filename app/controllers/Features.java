@@ -92,6 +92,11 @@ public class Features extends Controller {
 				properties.put("description", description);
 				properties.put("name", name);
 				
+				Date date = new Date();
+				long dateInLong = date.getTime()/1000;
+				properties.put("created_time", dateInLong);
+				
+				
 				//Extract hashtags
 				Set<String> tags = TwitterHelper.searchHashTags(description);
 				if (tags.size() > 0) 

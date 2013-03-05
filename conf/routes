@@ -29,7 +29,7 @@ GET				/instagram/:id				controllers.Contents.contentOfInstaPOI(id:String)
 
 ##### Mapping Sessions ######
 # Add Session
-POST     		/session/new              	controllers.Sessions.create()
+#POST     		/session/new              	controllers.Sessions.create()
 #POST     		/session                  	controllers.Sessions.save()
 GET				/session/:id				controllers.Sessions.fetchProjectById(id:String)
 DELETE			/session/:id/:user_id		controllers.Sessions.delete(id:String, user_id:String)

@@ -356,8 +356,9 @@ public class InstagramParser {
 		properties.put("descr_url", Constants.SERVER_NAME_T+"/instagram/"+id);
 		properties.put("icon_url", Constants.SERVER_NAME_T+"/assets/img/"+"instagram.png");
 
-		
-		properties.put("created_time", jsonNode.get("created_time").asLong());
+		//TODO: TEST of this is the time when this insta feed was created??
+		Long timestampLong = jsonNode.get("created_time").asLong();
+		properties.put("created_time", timestampLong);
 		properties.put("source_type", "Instagram");
 		
 		//save url to both standard and instagram image
