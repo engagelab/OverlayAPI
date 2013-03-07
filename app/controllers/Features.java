@@ -126,8 +126,7 @@ public class Features extends Controller {
 					FilePart filePart = ctx().request().body().asMultipartFormData().getFile("picture");
 					properties = storeImageIn3Sizes(properties,filePart);
 				}
-					
-					
+						
 			}
 		else if (source_type.equalsIgnoreCase("mapped_instagram")) 
 			{
@@ -511,7 +510,7 @@ public class Features extends Controller {
 		Double latD = Double.valueOf(lat);
 		// limite to nearest 18
 		List<Feature> features = Feature.find()
-				.order("-properties.created_time").limit(10).asList();
+				.order("-properties.created_time").limit(18).asList();
 		List<Feature> instaPOIs;
 		try {
 			instaPOIs = InstagramParser.searchRecentInstaFeatures(lngD, latD);
@@ -582,7 +581,7 @@ public class Features extends Controller {
 //				.asList();
 		
 		List<Feature> features = Feature.find().disableValidation()
-				.field("geometry.coordinates").near(latD, lngD).limit(10)
+				.field("geometry.coordinates").near(latD, lngD).limit(18)
 				.asList();
 
 		List<Feature> instaPOIs = InstagramParser.searchInstaByRadius(lngD,
