@@ -37,8 +37,8 @@ public class HashTagManager extends Controller{
 			//e.printStackTrace();
 		}
 
-		return ok(toJson(features));
-
+		FeatureCollection featureCollection = new FeatureCollection(features);
+		return ok(toJson(featureCollection));
 
 	}
 	
