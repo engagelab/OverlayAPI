@@ -13,6 +13,8 @@ import models.Feature;
 import models.HashTagTable;
 import play.mvc.Controller;
 import play.mvc.Result;
+import helpers.FeatureCollection;
+
 
 public class HashTagManager extends Controller{
 
