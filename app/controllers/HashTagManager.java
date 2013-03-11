@@ -30,14 +30,14 @@ public class HashTagManager extends Controller{
 			features.addAll(overlayFeatures);
 		}
 		
-		List<Feature> instaFeatures;
-		try {
-			instaFeatures = InstagramParser.searchInstaPOIsByTag(hashTag);
-			features.addAll(instaFeatures);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		}
+//		List<Feature> instaFeatures;
+//		try {
+//			instaFeatures = InstagramParser.searchInstaPOIsByTag(hashTag);
+//			features.addAll(instaFeatures);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			//e.printStackTrace();
+//		}
 
 		FeatureCollection featureCollection = new FeatureCollection(features);
 		return ok(toJson(featureCollection));
