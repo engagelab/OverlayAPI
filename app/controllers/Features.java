@@ -133,6 +133,12 @@ public class Features extends Controller {
 				String description = (String) propertiesJSON.get("description");
 				properties.put("description", description);
 			
+				
+				Date date = new Date();
+				long dateInLong = date.getTime()/1000;
+				properties.put("created_time", dateInLong);
+				
+				
 				String mapper_description = (String) propertiesJSON.get("mapper_description");
 				// Formulate the label of the POI, using first sentence
 				// it is named as "name" as a convention of KML standard
