@@ -81,6 +81,10 @@ public class Features extends Controller {
 		String source_type = (String)propertiesJSON.get("source_type");
 		
 		
+		Date date = new Date();
+		long dateInLong = date.getTime()/1000;
+		properties.put("created_time", dateInLong);
+		
 		if (source_type.equalsIgnoreCase("overlay")) 
 			{
 				String description = (String) propertiesJSON.get("description");
@@ -92,9 +96,9 @@ public class Features extends Controller {
 				properties.put("description", description);
 				properties.put("name", name);
 				
-				Date date = new Date();
-				long dateInLong = date.getTime()/1000;
-				properties.put("created_time", dateInLong);
+//				Date date = new Date();
+//				long dateInLong = date.getTime()/1000;
+//				properties.put("created_time", dateInLong);
 				
 				
 				//Extract hashtags
@@ -134,9 +138,9 @@ public class Features extends Controller {
 				properties.put("description", description);
 			
 				
-				Date date = new Date();
-				long dateInLong = date.getTime()/1000;
-				properties.put("created_time", dateInLong);
+//				Date date = new Date();
+//				long dateInLong = date.getTime()/1000;
+//				properties.put("created_time", dateInLong);
 				
 				
 				String mapper_description = (String) propertiesJSON.get("mapper_description");
